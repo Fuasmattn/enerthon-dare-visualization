@@ -1,67 +1,51 @@
-import * as React from 'react';
-import ReactMapGL, {Source, Layer} from 'react-map-gl';
-import {Marker} from './Marker';
+import React, { useContext, useState } from 'react';
+import ReactMapGL from 'react-map-gl';
+import { ActionType } from '../../context/types';
+import { UIContext } from '../../context/UIStateProvider';
+import { Resource, ResourceType } from '../../shared/types';
+import { Marker } from './Marker';
+import { Viewport } from './types';
 
-interface Viewport {
-    latitude: number;
-    longitude: number;
-    zoom: number;
-}
-
-const geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
-    type: 'FeatureCollection',
-    features: [
-        {type: 'Feature', geometry: {type: 'Point', coordinates: [-122.4, 37.8]}, properties: null}
-    ]
+const biogasResource: Resource = {
+  id: 'biooo',
+  type: ResourceType.BIOGAS,
 };
 
-const paint = {
-    'circle-radius': 10,
-    'circle-color': '#007cbf'
+const waterResource: Resource = {
+  id: 'waterrr',
+  type: ResourceType.WATER,
 };
 
+const initialViewport: Viewport = {
+  latitude: 50,
+  longitude: 9,
+  zoom: 8,
+};
 
-function Map() {
-  const [viewport, setViewport] = React.useState({
-    latitude: 37.7577,
-    longitude: -122.4376,
-    zoom: 8
-  });
+export const Map: React.FC = () => {
+  const [viewport, setViewport] = useState(initialViewport);
+  const { dispatch } = useContext(UIContext);
 
   return (
     <ReactMapGL
       {...viewport}
       width="100%"
-      height="90vh"
+      height="100%"
       mapboxApiAccessToken="pk.eyJ1Ijoic2ltb25zdGVpbmhlYmVyIiwiYSI6ImNqcjd4N2RvdDAwczY0NHM3cDFndG1zamcifQ.U15J9NVbO3Xs22W4bTYmnw"
       onViewportChange={(viewport: Viewport) => setViewport(viewport)}
     >
-        <Marker latitude={37.7577} longitude={-122.4376}/>
-        {/* <Source id="my-data" type="geojson" data={geojson}>
-            <Layer id='point' type="circle" paint={paint}/>
-        </Source> */}
+      <Marker
+        onClick={() => dispatch({ type: ActionType.SELECT_RESOURCE, payload: biogasResource })}
+        resource={biogasResource}
+        latitude={50}
+        longitude={9}
+      />
+      <Marker
+        onClick={() => dispatch({ type: ActionType.SELECT_RESOURCE, payload: waterResource })}
+        resource={waterResource}
+        latitude={50.88}
+        longitude={9.1}
+      />
     </ReactMapGL>
   );
-}
-
-export default Map;
-
-
-
-
-
-
-
-
-function App() {
-  const [viewport, setViewport] = React.useState({
-    longitude: -122.45,
-    latitude: 37.78,
-    zoom: 14
-  });
-  return (
-    <ReactMapGL {...viewport} width="100vw" height="100vh" onViewportChange={setViewport}>
-
-    </ReactMapGL>
-  );
-}
+};

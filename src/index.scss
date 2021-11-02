@@ -1,0 +1,26 @@
+@import 'src/scss/_variables';
+@import 'src/scss/_custom';
+@import 'src/scss/_utilities';
+@import '../node_modules/bootstrap/scss/bootstrap';
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--bs-dark);
+  background: var(--bs-background);
+}
+
+h1 {
+  font-family: 'Lato', sans-serif;
+  font-weight: bold;
+}
+
+hr {
+  height: 3px !important;
+  opacity: 1;
+  color: var(--bs-light);
+}
