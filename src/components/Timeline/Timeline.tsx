@@ -213,7 +213,7 @@ export const Timeline: React.FC = () => {
       className="bg-white p-4 pt-3 px-0 rounded shadow"
       style={{ height: '100%' }}
     >
-      <div className="d-flex justify-content-between mb-3 ps-4 align-items-center">
+      <div className="d-flex justify-content-between mb-3 px-4 align-items-center">
         <p className="mb-0">
           <strong>DA/RE</strong> Timeline
         </p>
