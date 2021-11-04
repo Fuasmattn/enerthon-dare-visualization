@@ -13,7 +13,7 @@ export const DetailView: React.FC = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="p-4 bg-white shadow"
+          className="p-4 bg-white shadow rounded"
           style={{ width: '400px', height: '500px' }}
         >
           <div className="d-flex justify-content-between">

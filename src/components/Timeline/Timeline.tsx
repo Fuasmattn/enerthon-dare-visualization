@@ -6,6 +6,7 @@ import {
   d3AxisBottom,
   d3CurveStepAfter,
   d3Extent,
+  d3LeastIndex,
   d3Pointer,
   d3ScaleLinear,
   d3ScaleTime,
@@ -14,17 +15,6 @@ import {
 } from '../../utils/d3Modules';
 import { ActionType } from '../../context/types';
 import { DataContext } from '../../context/DataProvider';
-
-// const lineData = [
-//   { x: 1622629800000, y: 13 },
-//   { x: 1622670300000, y: 11.5 },
-//   { x: 1622802600000, y: 11.5 },
-//   { x: 1622843100000, y: 10 },
-//   { x: 1622930400000, y: 10 },
-//   { x: 1622956500000, y: 10.5 },
-//   { x: 1622975400000, y: 10.5 },
-//   { x: 1623015900000, y: 9 },
-// ].map((d) => ({ ...d, x: new Date(d.x) }));
 
 export const Timeline: React.FC = () => {
   const { state, dispatch } = useContext(UIContext);
@@ -44,12 +34,19 @@ export const Timeline: React.FC = () => {
     right: 50,
   };
 
-  const lineData = tickData
-    // .slice(-20)
-    .map((d) => ({
-      x: new Date(d.time),
-      y: d.NetStates[0].ist, // TODO: make net selectable
-    }));
+  const lineData = tickData.map((d) => ({
+    x: new Date(d.time),
+    y: d.NetStates[0].ist, // TODO: make net selectable
+    pot_minus: d.NetStates[0].pot_minus,
+    pot_plus: d.NetStates[0].pot_plus,
+  }));
+
+  const dataYrange = d3Extent(lineData, (d: { x: Date; y: number }) => d.y);
+
+  const yScale = d3ScaleLinear()
+    // @ts-ignore
+    .domain(dataYrange)
+    .range([100 - 20, 0]);
 
   const dataXrange = d3Extent(lineData, (d: { x: Date; y: number }) => d.x);
 
@@ -137,13 +134,6 @@ export const Timeline: React.FC = () => {
 
     svg.selectAll('g').remove();
 
-    const dataYrange = d3Extent(lineData, (d: { x: Date; y: number }) => d.y);
-
-    const yScale = d3ScaleLinear()
-      // @ts-ignore
-      .domain(dataYrange)
-      .range([height - paddingTop - strokeWidth - 20, 0]);
-
     const line = d3Area()
       .curve(d3CurveStepAfter)
       // @ts-ignore
@@ -152,12 +142,12 @@ export const Timeline: React.FC = () => {
       .y((d) => yScale(d.y));
     // .y0((d) => yScale(d.y))
     // @ts-ignore
-    // .y1((d) => height - paddingTop - strokeWidth - 20);
+    // .y1((d) => height - paddingTop);
 
     svg
       .append('g')
       .append('path')
-      .datum(lineData)
+      .datum(lineData.map((d) => ({ x: d.x, y: d.y })))
       .attr('transform', `translate(${padding.left}, ${paddingTop})`)
       .attr('fill', '#7CBE8150')
       .attr('stroke', '#7CBE81')
@@ -174,6 +164,8 @@ export const Timeline: React.FC = () => {
     svg.selectAll('g').remove();
     const mouseG = svg.append('g').attr('class', 'mouse-over-effects');
 
+    svg.append('g').append('text').attr('id', 'tooltip').attr('x', 50).attr('y', 50);
+
     mouseG
       .append('path')
       .attr('class', 'mouse-line')
@@ -189,15 +181,35 @@ export const Timeline: React.FC = () => {
       .attr('pointer-events', 'all')
       .on('mouseout', function () {
         d3Select('.mouse-line').style('opacity', '0');
+        d3Select('#tooltip').style('opacity', '0');
       })
       .on('mouseover', function () {
         d3Select('.mouse-line').style('opacity', '1');
+        d3Select('#tooltip').style('opacity', '1');
       })
-      .on('mousemove', function (event, data) {
-        const pointer = d3Pointer(event);
+      .on('mousemove', function (event) {
+        const mousePosition = d3Pointer(event);
         d3Select('.mouse-line').attr('d', function () {
-          return `M${pointer[0]}, ${height} ${pointer[0]}, -100`;
+          return `M${mousePosition[0]}, ${height} ${mousePosition[0]}, -100`;
         });
+
+        const hoveredDate = xScale.invert(mousePosition[0]);
+
+        const getDistanceFromHoveredDate = (d: { x: Date; y: number }): number =>
+          // @ts-ignore
+          Math.abs(d.x - hoveredDate);
+
+        const closestIndex =
+          d3LeastIndex(lineData, (a, b) => getDistanceFromHoveredDate(a) - getDistanceFromHoveredDate(b)) || 0;
+        const closestDataPoint = lineData[closestIndex];
+
+        // const closestXValue = closestDataPoint.x;
+        const closestYValue = closestDataPoint.y;
+
+        d3Select('#tooltip')
+          .text(`${closestYValue.toFixed(2)} MW`)
+          .attr('x', mousePosition[0] + 20)
+          .attr('y', yScale(closestYValue) + 50);
       });
   };
 

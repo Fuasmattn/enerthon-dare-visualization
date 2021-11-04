@@ -4,7 +4,13 @@ import { interpolateZoom as d3InterpolateZoom } from 'd3-interpolate';
 import { dispatch as d3Dispatch } from 'd3-dispatch';
 import { hierarchy as d3Hierarchy, pack as d3Pack } from 'd3-hierarchy';
 import { scaleBand as d3ScaleBand, scaleLinear as d3ScaleLinear, scaleTime as d3ScaleTime } from 'd3-scale';
-import { descending as d3Descending, max as d3Max, min as d3Min, extent as d3Extent } from 'd3-array';
+import {
+  descending as d3Descending,
+  max as d3Max,
+  min as d3Min,
+  extent as d3Extent,
+  leastIndex as d3LeastIndex,
+} from 'd3-array';
 import { axisLeft as d3AxisLeft } from 'd3-axis';
 import { axisBottom as d3AxisBottom } from 'd3-axis';
 import { timeFormat as d3TimeFormat } from 'd3-time-format';
@@ -31,4 +37,5 @@ export {
   d3CurveStepAfter,
   d3Area,
   d3Pointer,
+  d3LeastIndex,
 };
