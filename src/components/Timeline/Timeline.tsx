@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { motion, useCycle } from 'framer-motion';
 import { UIContext } from '../../context/UIStateProvider';
 import {
@@ -17,7 +17,7 @@ import { ActionType } from '../../context/types';
 import { DataContext } from '../../context/DataProvider';
 
 export const Timeline: React.FC = () => {
-  const { state, dispatch } = useContext(UIContext);
+  const { dispatch } = useContext(UIContext);
   const {
     data: { timeline, tickData, currentTick },
   } = useContext(DataContext);

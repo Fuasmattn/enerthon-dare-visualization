@@ -1,14 +1,17 @@
+/* eslint-disable no-unused-vars */
 import { Powerplant } from '../shared/types';
 
 export interface UIState {
   selectedResource: Powerplant | null;
   showTimeline: boolean;
+  privacyMode: boolean;
 }
 
 export enum ActionType {
   SELECT_RESOURCE,
   DESELECT_RESOURCE,
   TOGGLE_TIMELINE,
+  TOGGLE_PRIVACY,
 }
 
 export interface DeselectResourceAction {
@@ -24,8 +27,11 @@ export interface ToggleTimelineAction {
   type: ActionType.TOGGLE_TIMELINE;
 }
 
-export type Action = DeselectResourceAction | SelectResourceAction | ToggleTimelineAction;
+export interface TogglePrivacyModeAction {
+  type: ActionType.TOGGLE_PRIVACY;
+}
 
+export type Action = DeselectResourceAction | SelectResourceAction | ToggleTimelineAction | TogglePrivacyModeAction;
 
 export type Tick = {
   NetStates: {

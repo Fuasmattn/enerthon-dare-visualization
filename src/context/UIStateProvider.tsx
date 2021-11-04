@@ -5,6 +5,7 @@ import { reducer } from './reducer';
 const initialState: UIState = {
   selectedResource: null,
   showTimeline: true,
+  privacyMode: false,
 };
 
 export const UIContext = createContext<{ state: UIState; dispatch: React.Dispatch<Action> }>({

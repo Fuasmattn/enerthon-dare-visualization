@@ -73,7 +73,7 @@ export const DataProvider: React.FC = ({ children }) => {
     return () => {
       interval.current && clearInterval(interval.current);
     };
-  }, []);
+  });
 
   return <DataContext.Provider value={{ data: state }}>{children}</DataContext.Provider>;
 };
