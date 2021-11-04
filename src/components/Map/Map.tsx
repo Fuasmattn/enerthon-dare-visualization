@@ -1,8 +1,10 @@
 import React, { useContext, useState } from 'react';
 import ReactMapGL from 'react-map-gl';
-import { ActionType } from '../../context/types';
+import { DataContext } from '../../context/DataProvider';
+import { ActionType, Tick } from '../../context/types';
 import { UIContext } from '../../context/UIStateProvider';
-import { Powerplant, PowerplantType } from '../../shared/types';
+import { masterData, plantTypeMapping } from '../../shared/data';
+import { PlantMaster, Powerplant, PowerplantType } from '../../shared/types';
 import { Marker } from '../Marker/Marker';
 import { Viewport } from './types';
 
@@ -57,6 +59,43 @@ const sunResource: Powerplant = {
   }
 };
 
+
+const parsePower = (power: string): number => {
+  const numberAsString = power.replace(" kW", "");
+  const parsedPower = parseFloat(numberAsString);
+
+  return parsedPower / 1000;
+}
+
+
+const enrichTick = (tick: Tick): Powerplant[] => {
+  let powerplants: Powerplant[] = [];
+  tick.PowerPlants.forEach(powerplant => {
+    const plantMaster: PlantMaster = masterData[powerplant.name]
+
+    powerplants = [...powerplants, {
+      id: plantMaster.Klarname,
+      type: plantTypeMapping[plantMaster.Energietraeger],
+      name: plantMaster.KlarnameTR,
+      location: {
+        latitude: plantMaster.Latitude,
+        longitude: plantMaster.Longitude,
+      },
+      max_power: parsePower(plantMaster.Nettonennleistung),
+      min_power: 0.0,
+      state: {
+        ist: powerplant.ist,
+        potential_plus: powerplant.pot_plus,
+        potential_minus: powerplant.pot_minus,
+        command: powerplant.command,
+      }
+    }]
+  })
+  
+  return powerplants;
+}
+
+
 const initialViewport: Viewport = {
   latitude: 50,
   longitude: 9,
@@ -66,6 +105,14 @@ const initialViewport: Viewport = {
 export const Map: React.FC = () => {
   const [viewport, setViewport] = useState(initialViewport);
   const { dispatch } = useContext(UIContext);
+  const {
+    data: { timeline, tickData, currentTick },
+  } = useContext(DataContext);
+
+  const powerplants = enrichTick(tickData[tickData.length - 1])
+
+  console.log(tickData);
+  console.log(powerplants);
 
   const __dispatch = (powerplant: Powerplant) => dispatch({ type: ActionType.SELECT_RESOURCE, payload: powerplant })
 
@@ -78,18 +125,12 @@ export const Map: React.FC = () => {
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onViewportChange={(viewport: Viewport) => setViewport(viewport)}
     >
-      <Marker
-        onClick={__dispatch}
-        powerplant={biogasResource}
-      />
-      <Marker
-        onClick={__dispatch}
-        powerplant={waterResource}
-      />
-      <Marker
-        onClick={__dispatch}
-        powerplant={sunResource}
-      />
+      {powerplants.map((powerplant) => {
+        return <Marker key={powerplant.name}
+          onClick={__dispatch}
+          powerplant={powerplant}
+        />
+      })}
     </ReactMapGL>
   );
 };

@@ -1,22 +1,8 @@
 import React, { createContext, useEffect, useRef, useState } from 'react';
+import { Tick } from './types';
 
 type Timeline = Array<{ start: Date; finish: Date; name: string; value: number }>;
-type Tick = {
-  NetStates: {
-    ist: number;
-    name: string;
-    pot_minus: number;
-    pot_plus: number;
-  }[];
-  PowerPlants: {
-    command: number;
-    ist: number;
-    name: string;
-    pot_minus: number;
-    pot_plus: number;
-  }[];
-  time: number;
-};
+
 interface Data {
   timeline: Timeline;
   tickData: Array<Tick>;
@@ -24,7 +10,7 @@ interface Data {
 }
 const initialState: Data = { timeline: [], tickData: [], currentTick: 0 };
 
-const tickInterval = 20;
+const tickInterval = 1000;
 
 // const timelineMock: Timeline = [
 //   { finish: 1622670300000, name: 'CSR1WIND001', start: 1622629800000, value: -1.5 },

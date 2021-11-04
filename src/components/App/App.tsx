@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Map } from '../Map/Map';
 import { UIContext } from '../../context/UIStateProvider';
 import { DetailView } from '../DetailView/DetailView';
@@ -7,6 +7,9 @@ import './App.css';
 
 const App: React.FC = () => {
   const { state } = useContext(UIContext);
+  useEffect(() => {
+    fetch("http://localhost:8890/reset_tick")
+  })
 
   return (
     <div className="App">

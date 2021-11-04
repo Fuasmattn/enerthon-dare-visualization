@@ -25,3 +25,21 @@ export interface ToggleTimelineAction {
 }
 
 export type Action = DeselectResourceAction | SelectResourceAction | ToggleTimelineAction;
+
+
+export type Tick = {
+  NetStates: {
+    ist: number;
+    name: string;
+    pot_minus: number;
+    pot_plus: number;
+  }[];
+  PowerPlants: {
+    command: number;
+    ist: number;
+    name: string;
+    pot_minus: number;
+    pot_plus: number;
+  }[];
+  time: number;
+};
