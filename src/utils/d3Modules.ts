@@ -3,10 +3,12 @@ import { transition as d3Transition } from 'd3-transition';
 import { interpolateZoom as d3InterpolateZoom } from 'd3-interpolate';
 import { dispatch as d3Dispatch } from 'd3-dispatch';
 import { hierarchy as d3Hierarchy, pack as d3Pack } from 'd3-hierarchy';
-import { scaleBand as d3ScaleBand, scaleLinear as d3ScaleLinear } from 'd3-scale';
-import { descending as d3Descending, max as d3Max, min as d3Min } from 'd3-array';
+import { scaleBand as d3ScaleBand, scaleLinear as d3ScaleLinear, scaleTime as d3ScaleTime } from 'd3-scale';
+import { descending as d3Descending, max as d3Max, min as d3Min, extent as d3Extent } from 'd3-array';
 import { axisLeft as d3AxisLeft } from 'd3-axis';
 import { axisBottom as d3AxisBottom } from 'd3-axis';
+import { timeFormat as d3TimeFormat } from 'd3-time-format';
+import { line as d3Line, area as d3Area, curveStepAfter as d3CurveStepAfter } from 'd3-shape';
 
 export {
   d3Select,
@@ -23,4 +25,10 @@ export {
   d3AxisLeft,
   d3AxisBottom,
   d3Descending,
+  d3ScaleTime,
+  d3TimeFormat,
+  d3Line,
+  d3Extent,
+  d3CurveStepAfter,
+  d3Area,
 };

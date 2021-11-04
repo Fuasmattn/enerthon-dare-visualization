@@ -16,7 +16,7 @@ const App: React.FC = () => {
       <div className="position-absolute" style={{ right: '50px', top: '80px' }}>
         <DetailView />
       </div>
-      <div className="position-absolute vw-80 vh-15" style={{ left: '10vw', bottom: 0, height: 200 }}>
+      <div className="position-absolute vw-80 vh-45" style={{ left: '10vw', bottom: 0 }}>
         <Timeline />
       </div>
     </div>

@@ -2,11 +2,13 @@
 @import 'src/scss/_custom';
 @import 'src/scss/_utilities';
 @import '../node_modules/bootstrap/scss/bootstrap';
+@import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
 
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
 
 body {
   margin: 0;
+  overflow: hidden;
   font-family: 'Lato', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -24,3 +26,19 @@ hr {
   opacity: 1;
   color: var(--bs-light);
 }
+
+.btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+// /* Hide scrollbar for Chrome, Safari and Opera */
+// ::-webkit-scrollbar {
+//   display: none;
+// }
+
+// /* Hide scrollbar for IE, Edge and Firefox */
+// * {
+//   -ms-overflow-style: none;  /* IE and Edge */
+//   scrollbar-width: none;  /* Firefox */
+// }

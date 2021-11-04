@@ -74,7 +74,8 @@ export const Map: React.FC = () => {
       {...viewport}
       width="100%"
       height="100%"
-      mapboxApiAccessToken="pk.eyJ1Ijoic2ltb25zdGVpbmhlYmVyIiwiYSI6ImNqcjd4N2RvdDAwczY0NHM3cDFndG1zamcifQ.U15J9NVbO3Xs22W4bTYmnw"
+      // mapStyle="mapbox://styles/mapbox/dark-v8"
+      mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onViewportChange={(viewport: Viewport) => setViewport(viewport)}
     >
       <Marker

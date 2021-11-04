@@ -23,7 +23,3 @@ export const reducer = (state: UIState, action: Action) => {
       return state;
   }
 };
-
-export const initialState = {
-  active: false,
-};
