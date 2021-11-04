@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { motion, useCycle } from 'framer-motion';
 import { UIContext } from '../../context/UIStateProvider';
 import {
@@ -6,96 +6,43 @@ import {
   d3AxisBottom,
   d3CurveStepAfter,
   d3Extent,
-  d3Line,
   d3ScaleLinear,
   d3ScaleTime,
   d3Select,
   d3TimeFormat,
 } from '../../utils/d3Modules';
 import { ActionType } from '../../context/types';
+import { DataContext } from '../../context/DataProvider';
 
-// const mockdata = {
-//   1635953982: {
-//     powerplants: [
-//       {
-//         name: 'sonne001',
-//         ist: 5,
-//         potential_plus: 1,
-//         potential_minus: 2,
-//         command: 0,
-//       },
-//     ],
-
-//     netStates: {
-//       mitte: {
-//         ist: 12,
-//         potential_plus: 10,
-//         potential_minus: 4,
-//       },
-//     },
-//   },
-// 1635951282: {
-//   powerplants: {
-//     sonne001: {
-//       ist: 5,
-//       potential_plus: 1,
-//       potential_minus: 2,
-//       command: 1,
-//     },
-//   },
-//   netStates: {
-//     mitte: {
-//       ist: 12,
-//       potential_plus: 10,
-//       potential_minus: 4,
-//     },
-//   },
-// },
-// 1635952182: {
-//   powerplants: {
-//     sonne001: {
-//       ist: 6,
-//       potential_plus: 0,
-//       potential_minus: 3,
-//       command: 0,
-//     },
-//   },
-//   netStates: {
-//     mitte: {
-//       ist: 13,
-//       potential_plus: 9,
-//       potential_minus: 5,
-//     },
-//   },
-// },
-// };
-
-const data = [
-  { start: new Date('2021-08-01T12:00Z'), finish: new Date('2021-08-01T15:00Z'), value: 1 },
-  { start: new Date('2021-08-01T15:15Z'), finish: new Date('2021-08-01T15:45Z'), value: -1 },
-  { start: new Date('2021-08-01T16:00Z'), finish: new Date('2021-08-01T17:00Z'), value: -1 },
-  { start: new Date('2021-08-01T20:00Z'), finish: new Date('2021-08-01T23:00Z'), value: 3.5 },
-];
-
-const lineData = [
-  { x: new Date('2021-08-01T12:00Z'), y: 13 },
-  { x: new Date('2021-08-01T15:00Z'), y: 14 },
-  { x: new Date('2021-08-01T15:15Z'), y: 14 },
-  { x: new Date('2021-08-01T15:45Z'), y: 13 },
-  { x: new Date('2021-08-01T16:00Z'), y: 13 },
-  { x: new Date('2021-08-01T17:00Z'), y: 12 },
-  { x: new Date('2021-08-01T20:00Z'), y: 12 },
-  { x: new Date('2021-08-01T23:00Z'), y: 15.5 },
-  { x: new Date('2021-08-02T01:00Z'), y: 15.5 },
-];
+// const lineData = [
+//   { x: 1622629800000, y: 13 },
+//   { x: 1622670300000, y: 11.5 },
+//   { x: 1622802600000, y: 11.5 },
+//   { x: 1622843100000, y: 10 },
+//   { x: 1622930400000, y: 10 },
+//   { x: 1622956500000, y: 10.5 },
+//   { x: 1622975400000, y: 10.5 },
+//   { x: 1623015900000, y: 9 },
+// ].map((d) => ({ ...d, x: new Date(d.x) }));
 
 export const Timeline: React.FC = () => {
   const { state, dispatch } = useContext(UIContext);
+  const {
+    data: { timeline, tickData, currentTick },
+  } = useContext(DataContext);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [tick, setTick] = useState(0);
-
   const paddingLeft = 150;
+  const paddingRight = 170;
+
+  const lineData = tickData
+    // .slice(-20)
+    .map((d) => ({
+      x: new Date(d.time),
+      y: d.NetStates[0].ist, // TODO: make net selectable
+    }));
+
+  console.debug('lineData', lineData);
 
   const renderEventTimeline = () => {
     const paddingTop = 20;
@@ -111,7 +58,7 @@ export const Timeline: React.FC = () => {
     const xScale = d3ScaleTime()
       // @ts-ignore
       .domain(dataXrange)
-      .range([0, width - paddingLeft]);
+      .range([0, width - paddingRight]);
 
     const defs = svg.append('defs');
 
@@ -131,7 +78,7 @@ export const Timeline: React.FC = () => {
     svg
       .append('g')
       .selectAll('line')
-      .data(data)
+      .data(timeline)
       .enter()
       .append('line')
       .attr('transform', `translate(${paddingLeft}, ${paddingTop})`)
@@ -146,7 +93,7 @@ export const Timeline: React.FC = () => {
     svg
       .append('g')
       .selectAll('text')
-      .data(data)
+      .data(timeline)
       .enter()
       .append('text')
       .attr('transform', `translate(${paddingLeft - 15}, ${paddingTop})`)
@@ -169,7 +116,7 @@ export const Timeline: React.FC = () => {
     svg
       .append('g')
       .selectAll('line')
-      .data(data)
+      .data(timeline)
       .enter()
       .append('line')
       .attr('transform', `translate(${paddingLeft}, ${paddingTop})`)
@@ -180,20 +127,6 @@ export const Timeline: React.FC = () => {
       .attr('stroke-width', 2)
       .attr('stroke', 'black')
       .attr('marker-end', 'url(#arrow)');
-
-    // svg
-    //   .append('g')
-    //   .selectAll('line')
-    //   .data(data)
-    //   .enter()
-    //   .append('line')
-    //   .attr('transform', `translate(15, ${paddingTop})`)
-    //   .attr('x1', (d) => xScale(d.finish))
-    //   .attr('x2', (d) => xScale(d.finish))
-    //   .attr('y1', 10)
-    //   .attr('y2', 31)
-    //   .attr('stroke-width', 2)
-    //   .attr('stroke', 'black');
   };
 
   const renderPowerTimeline = () => {
@@ -211,22 +144,22 @@ export const Timeline: React.FC = () => {
     const xScale = d3ScaleTime()
       // @ts-ignore
       .domain(dataXrange)
-      .range([0, width - paddingLeft]);
+      .range([0, width - paddingRight]);
 
     const yScale = d3ScaleLinear()
       // @ts-ignore
       .domain(dataYrange)
-      .range([height - paddingTop - strokeWidth - 20, 20]);
+      .range([height - paddingTop - strokeWidth - 20, 0]);
 
     const line = d3Area()
       .curve(d3CurveStepAfter)
       // @ts-ignore
       .x((d) => xScale(d.x))
       // @ts-ignore
-      // .y((d) => yScale(d.y));
-      .y0((d) => yScale(d.y))
-      // @ts-ignore
-      .y1((d) => height - paddingTop - strokeWidth);
+      .y((d) => yScale(d.y));
+    // .y0((d) => yScale(d.y))
+    // @ts-ignore
+    // .y1((d) => height - paddingTop - strokeWidth - 20);
 
     svg
       .append('g')
@@ -264,10 +197,10 @@ export const Timeline: React.FC = () => {
     const xScale = d3ScaleTime()
       // @ts-ignore
       .domain(dataXrange)
-      .range([0, width - paddingLeft]);
+      .range([0, width - paddingRight]);
 
     // @ts-ignore
-    const xAxis = d3AxisBottom(xScale).tickFormat(d3TimeFormat('%H:%m'));
+    const xAxis = d3AxisBottom(xScale).tickFormat(d3TimeFormat('%B %d %H:%m'));
     svg
       .append('g')
       .attr('transform', `translate(${paddingLeft}, ${paddingTop * 4})`)
@@ -280,18 +213,6 @@ export const Timeline: React.FC = () => {
     renderAxis();
   };
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setTick((tick) => tick + 1);
-  //     if (tick === 3) {
-  //       data.push({ start: new Date('2021-08-01T20:00Z'), finish: new Date('2021-08-01T23:00Z'), value: 3.5 });
-  //       lineData.push({ x: new Date('2021-08-01T23:00Z'), y: 15.5 }, { x: new Date('2021-08-02T01:00Z'), y: 15.5 });
-
-  //     }
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  // });
-
   useEffect(() => {
     renderTimeline();
 
@@ -302,7 +223,7 @@ export const Timeline: React.FC = () => {
     };
   });
 
-  const [animate, cycle] = useCycle({ y: 0 }, { y: 270 });
+  const [animate, cycle] = useCycle({ y: 20 }, { y: 270 });
   const [animateBtn, cycleBtn] = useCycle(
     { rotate: 0, transition: { delay: 0.1, duration: 0.4 } },
     { rotate: -180, transition: { delay: 0.1, duration: 0.4 } },
@@ -311,7 +232,8 @@ export const Timeline: React.FC = () => {
   return (
     <motion.div
       animate={animate}
-      transition={{ duration: 0.2 }}
+      initial={{ y: 270 }}
+      transition={{ duration: 1 }}
       className="bg-white p-4 pt-3 rounded shadow"
       style={{ height: '100%' }}
     >
@@ -319,6 +241,7 @@ export const Timeline: React.FC = () => {
         <p className="mb-0">
           <strong>DA/RE</strong> Timeline
         </p>
+        <p>tick: {currentTick}</p>
         <motion.button
           type="button"
           animate={animateBtn}
@@ -334,12 +257,10 @@ export const Timeline: React.FC = () => {
           <i className="fs-5 bi bi-chevron-down"></i>
         </motion.button>
       </div>
-      <div style={{ paddingLeft: '0', paddingRight: '5%' }}>
-        <div ref={containerRef}>
-          <svg id="power-timeline"></svg>
-          <svg id="event-timeline"></svg>
-          <svg id="timeline-axis"></svg>
-        </div>
+      <div ref={containerRef}>
+        <svg id="power-timeline"></svg>
+        <svg id="event-timeline"></svg>
+        <svg id="timeline-axis"></svg>
       </div>
     </motion.div>
   );
