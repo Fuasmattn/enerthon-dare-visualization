@@ -1,7 +1,7 @@
-import { Resource } from '../shared/types';
+import { Powerplant } from '../shared/types';
 
 export interface UIState {
-  selectedResource: Resource | null;
+  selectedResource: Powerplant | null;
   showTimeline: boolean;
 }
 
@@ -17,7 +17,7 @@ export interface DeselectResourceAction {
 
 export interface SelectResourceAction {
   type: ActionType.SELECT_RESOURCE;
-  payload: Resource;
+  payload: Powerplant;
 }
 
 export interface ToggleTimelineAction {

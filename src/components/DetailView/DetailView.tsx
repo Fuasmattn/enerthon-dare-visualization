@@ -16,14 +16,17 @@ export const DetailView: React.FC = () => {
           className="p-4 bg-white shadow"
           style={{ width: '400px', height: '500px' }}
         >
-          <div className="d-flex justify-content-between">
-            <p className="fs-5">{state.selectedResource?.id}</p>
-            <button
-              type="button"
-              className="btn-close"
-              aria-label="Close"
-              onClick={() => dispatch({ type: ActionType.DESELECT_RESOURCE })}
-            ></button>
+          <div className="d-flex flex-column">
+            <div className="d-flex flex-row-reverse">
+              <button
+                type="button"
+                className="btn-close"
+                aria-label="Close"
+                onClick={() => dispatch({ type: ActionType.DESELECT_RESOURCE })}
+              ></button>
+            </div>
+            <p className="d-flex justify-content-between fs-5">Id: {state.selectedResource?.id}</p>
+            <p className="d-flex justify-content-between fs-5">Name: {state.selectedResource?.name}</p>
           </div>
         </motion.div>
       )}
