@@ -140,7 +140,7 @@ export const Timeline: React.FC = () => {
       .x((d) => xScale(d.x))
       // @ts-ignore
       .y((d) => yScale(d.y));
-    
+
     const areaPotMinus = d3Area()
       .curve(d3CurveStepAfter)
       // @ts-ignore
@@ -150,7 +150,7 @@ export const Timeline: React.FC = () => {
       // @ts-ignore
       .y1((d) => yScale(d.y) + yScale(d.pot_minus));
 
-      const areaPotPlus = d3Area()
+    const areaPotPlus = d3Area()
       .curve(d3CurveStepAfter)
       // @ts-ignore
       .x((d) => xScale(d.x))
@@ -158,7 +158,6 @@ export const Timeline: React.FC = () => {
       .y0((d) => yScale(d.y))
       // @ts-ignore
       .y1((d) => yScale(d.y) - yScale(d.pot_plus));
-
 
     svg
       .append('g')
@@ -298,8 +297,13 @@ export const Timeline: React.FC = () => {
       style={{ height: '100%' }}
     >
       <div className="d-flex justify-content-between mb-3 px-4 align-items-center">
-        <p className="mb-0">
-          <strong>DA/RE</strong> Timeline
+        <p className="fs-5 mb-0">
+          <strong>
+            <span style={{ color: '#636363' }}>DA</span>
+            <span style={{ color: '#7CBE82' }}>/</span>
+            <span style={{ color: '#636363' }}>RE</span>
+          </strong>{' '}
+          Timeline
         </p>
         <p className="mb-0">
           Selected Grid: <strong>Mitte</strong>

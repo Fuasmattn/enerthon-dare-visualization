@@ -19,7 +19,7 @@ const App: React.FC = () => {
       <div className="vw-100 vh-100">
         <Map />
       </div>
-      <div className="position-absolute" style={{ right: '50px', top: '80px' }}>
+      <div className="position-absolute" style={{ right: '10%', top: '15%' }}>
         <DetailView />
       </div>
       <div className="position-absolute vw-80 vh-45" style={{ left: '10vw', bottom: 0 }}>

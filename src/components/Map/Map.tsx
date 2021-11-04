@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import ReactMapGL, { FlyToInterpolator } from 'react-map-gl';
+import ReactMapGL, { FlyToInterpolator, NavigationControl } from 'react-map-gl';
 import { DataContext } from '../../context/DataProvider';
 import { ActionType, Tick } from '../../context/types';
 import { UIContext } from '../../context/UIStateProvider';
@@ -104,6 +104,11 @@ const initialViewport: Viewport = {
   zoom: 6.5,
 };
 
+const navControlStyle = {
+  right: 10,
+  top: 10,
+};
+
 export const Map: React.FC = () => {
   const [viewport, setViewport] = useState<Viewport>(initialViewport);
   const {
@@ -133,13 +138,13 @@ export const Map: React.FC = () => {
       {...viewport}
       width="100%"
       height="100%"
-      // mapStyle="mapbox://styles/mapbox/dark-v8"
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onViewportChange={setViewport}
     >
       {powerplants.map((powerplant, i) => {
         return <Marker key={`${powerplant.name}-${i}`} onClick={__dispatch} powerplant={powerplant} />;
       })}
+      <NavigationControl style={navControlStyle} />
     </ReactMapGL>
   );
 };
