@@ -36,9 +36,9 @@ export const Timeline: React.FC = () => {
 
   const lineData = tickData.map((d) => ({
     x: new Date(d.time),
-    y: d.NetStates[0].ist, // TODO: make net selectable
-    pot_minus: d.NetStates[0].pot_minus,
-    pot_plus: d.NetStates[0].pot_plus,
+    y: d.NetStates ? d.NetStates[0].ist : 0, // TODO: make net selectable
+    // pot_minus: d.NetStates[0].pot_minus,
+    // pot_plus: d.NetStates[0].pot_plus,
   }));
 
   const dataYrange = d3Extent(lineData, (d: { x: Date; y: number }) => d.y);
@@ -71,7 +71,7 @@ export const Timeline: React.FC = () => {
 
     defs
       .append('marker')
-      .attr('id', 'arrow')
+      .attr('id', 'timeline-arrow')
       .attr('viewBox', '0 -5 10 10')
       .attr('refX', 5)
       .attr('refY', 0)
@@ -123,7 +123,7 @@ export const Timeline: React.FC = () => {
       .attr('y2', (d) => (d.value < 0 ? 30 : 10))
       .attr('stroke-width', 2)
       .attr('stroke', 'black')
-      .attr('marker-end', 'url(#arrow)');
+      .attr('marker-end', 'url(#timeline-arrow)');
   };
 
   const renderPowerTimeline = () => {

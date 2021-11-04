@@ -10,7 +10,7 @@ interface Data {
 }
 const initialState: Data = { timeline: [], tickData: [], currentTick: 0 };
 
-const tickInterval = 1000;
+const tickInterval = 100;
 
 // const timelineMock: Timeline = [
 //   { finish: 1622670300000, name: 'CSR1WIND001', start: 1622629800000, value: -1.5 },
@@ -40,14 +40,24 @@ export const DataProvider: React.FC = ({ children }) => {
   const interval = useRef<NodeJS.Timer>(null);
 
   const fetchTimeline = async () => {
-    const response = await fetch('http://localhost:8890/get_timeline');
-    return await response.json();
+    try {
+      const response = await fetch('http://localhost:8890/get_timeline');
+      return await response.json();
+    } catch (e) {
+      interval.current && clearInterval(interval.current);
+    }
   };
 
   const fetchTick = async () => {
     try {
       const response = await fetch('http://localhost:8890/get_tick');
-      return await response.json();
+      const result = await response.json();
+      if (result.message && result.message === 'No more data') {
+        interval.current && clearInterval(interval.current);
+        console.info('done loading')
+      } else {
+        return result;
+      }
     } catch (e) {
       interval.current && clearInterval(interval.current);
     }
@@ -73,7 +83,7 @@ export const DataProvider: React.FC = ({ children }) => {
     return () => {
       interval.current && clearInterval(interval.current);
     };
-  });
+  }, []);
 
   return <DataContext.Provider value={{ data: state }}>{children}</DataContext.Provider>;
 };

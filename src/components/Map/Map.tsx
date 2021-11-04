@@ -68,7 +68,7 @@ const parsePower = (power: string): number => {
 
 const enrichTick = (tick: Tick): Powerplant[] => {
   let powerplants: Powerplant[] = [];
-  tick.PowerPlants.forEach((powerplant) => {
+  tick.PowerPlants && tick.PowerPlants.forEach((powerplant) => {
     const plantMaster: PlantMaster = masterData[powerplant.name];
 
     powerplants = [
