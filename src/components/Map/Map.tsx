@@ -97,9 +97,9 @@ const enrichTick = (tick: Tick): Powerplant[] => {
 };
 
 const initialViewport: Viewport = {
-  latitude: 50,
-  longitude: 9,
-  zoom: 8,
+  latitude: 48,
+  longitude: 11,
+  zoom: 6.5,
 };
 
 export const Map: React.FC = () => {

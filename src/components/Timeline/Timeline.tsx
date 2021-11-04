@@ -19,7 +19,7 @@ import { DataContext } from '../../context/DataProvider';
 export const Timeline: React.FC = () => {
   const { dispatch } = useContext(UIContext);
   const {
-    data: { timeline, tickData, currentTick },
+    data: { timeline, tickData },
   } = useContext(DataContext);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -37,8 +37,8 @@ export const Timeline: React.FC = () => {
   const lineData = tickData.map((d) => ({
     x: new Date(d.time),
     y: d.NetStates ? d.NetStates[0].ist : 0, // TODO: make net selectable
-    // pot_minus: d.NetStates[0].pot_minus,
-    // pot_plus: d.NetStates[0].pot_plus,
+    pot_minus: d.NetStates[0] ? d.NetStates[0].pot_minus : 0,
+    pot_plus: d.NetStates[0] ? d.NetStates[0].pot_plus : 0,
   }));
 
   const dataYrange = d3Extent(lineData, (d: { x: Date; y: number }) => d.y);
@@ -140,20 +140,55 @@ export const Timeline: React.FC = () => {
       .x((d) => xScale(d.x))
       // @ts-ignore
       .y((d) => yScale(d.y));
-    // .y0((d) => yScale(d.y))
-    // @ts-ignore
-    // .y1((d) => height - paddingTop);
+    
+    const areaPotMinus = d3Area()
+      .curve(d3CurveStepAfter)
+      // @ts-ignore
+      .x((d) => xScale(d.x))
+      // @ts-ignore
+      .y0((d) => yScale(d.y))
+      // @ts-ignore
+      .y1((d) => yScale(d.y) + yScale(d.pot_minus));
+
+      const areaPotPlus = d3Area()
+      .curve(d3CurveStepAfter)
+      // @ts-ignore
+      .x((d) => xScale(d.x))
+      // @ts-ignore
+      .y0((d) => yScale(d.y))
+      // @ts-ignore
+      .y1((d) => yScale(d.y) - yScale(d.pot_plus));
+
 
     svg
       .append('g')
       .append('path')
       .datum(lineData.map((d) => ({ x: d.x, y: d.y })))
       .attr('transform', `translate(${padding.left}, ${paddingTop})`)
-      .attr('fill', '#7CBE8150')
       .attr('stroke', '#7CBE81')
       .attr('stroke-width', strokeWidth)
       // @ts-ignore
       .attr('d', line(lineData));
+
+    // svg
+    //   .append('g')
+    //   .append('path')
+    //   .datum(lineData.map((d) => ({ x: d.x, y: d.y })))
+    //   .attr('transform', `translate(${padding.left}, ${paddingTop})`)
+    //   .attr('fill', '#ffffff80')
+    //   .attr('stroke-width', strokeWidth)
+    //   // @ts-ignore
+    //   .attr('d', areaPotMinus(lineData));
+
+    //   svg
+    //   .append('g')
+    //   .append('path')
+    //   .datum(lineData.map((d) => ({ x: d.x, y: d.y })))
+    //   .attr('transform', `translate(${padding.left}, ${paddingTop})`)
+    //   .attr('fill', '#7CBE8120')
+    //   .attr('stroke-width', strokeWidth)
+    //   // @ts-ignore
+    //   .attr('d', areaPotPlus(lineData));
   };
 
   const renderMouseOver = () => {
