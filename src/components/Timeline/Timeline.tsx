@@ -60,7 +60,7 @@ export const Timeline: React.FC = () => {
   const overwidth = Math.max(maxX - minX, width) + margin.left + margin.right;
 
   const renderEventTimeline = () => {
-    const paddingTop = 20;
+    const paddingTop = 10;
     const height = 60;
     const svg = d3Select('#event-timeline');
     svg.attr('height', height).attr('width', overwidth);
@@ -89,12 +89,12 @@ export const Timeline: React.FC = () => {
       .enter()
       .append('line')
       .attr('transform', `translate(${padding.left}, ${paddingTop})`)
-      .attr('x1', (d) => xScale(d.start) + 5)
+      .attr('x1', (d) => xScale(d.start) + 10)
       .attr('y1', 30)
-      .attr('x2', (d) => xScale(d.finish) - 5)
+      .attr('x2', (d) => xScale(d.finish))
       .attr('y2', 30)
       .attr('stroke', 'black')
-      .style('stroke-dasharray', '2,2')
+      .style('stroke-dasharray', '2,5')
       .attr('stroke-width', 2);
 
     svg
@@ -106,9 +106,9 @@ export const Timeline: React.FC = () => {
       .attr('transform', `translate(${padding.left - 15}, ${paddingTop})`)
       .text((d) => `${Math.abs(d.value)} MW`)
       .style('font-size', 13)
-      .attr('x', (d) => xScale(d.start) + 22)
+      .attr('x', (d) => xScale(d.start) + 25)
       .attr('text-anchor', 'start')
-      .attr('y', 25);
+      .attr('y', 20);
 
     svg
       .append('g')
@@ -119,8 +119,8 @@ export const Timeline: React.FC = () => {
       .attr('transform', `translate(${padding.left}, ${paddingTop})`)
       .attr('x1', (d) => xScale(d.start))
       .attr('x2', (d) => xScale(d.start))
-      .attr('y1', (d) => (d.value < 0 ? 10 : 30))
-      .attr('y2', (d) => (d.value < 0 ? 30 : 10))
+      .attr('y1', (d) => (d.value < 0 ? 5 : 30))
+      .attr('y2', (d) => (d.value < 0 ? 30 : 5))
       .attr('stroke-width', 2)
       .attr('stroke', 'black')
       .attr('marker-end', 'url(#timeline-arrow)');
