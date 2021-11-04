@@ -1,10 +1,11 @@
 import React, { useContext, useState } from 'react';
-import ReactMapGL from 'react-map-gl';
+import ReactMapGL, { FlyToInterpolator } from 'react-map-gl';
 import { DataContext } from '../../context/DataProvider';
 import { ActionType, Tick } from '../../context/types';
 import { UIContext } from '../../context/UIStateProvider';
 import { masterData, plantTypeMapping } from '../../shared/data';
 import { PlantMaster, Powerplant } from '../../shared/types';
+import { d3EaseInCubic } from '../../utils/d3Modules';
 import { Marker } from '../Marker/Marker';
 import { Viewport } from './types';
 
@@ -68,30 +69,31 @@ const parsePower = (power: string): number => {
 
 const enrichTick = (tick: Tick): Powerplant[] => {
   let powerplants: Powerplant[] = [];
-  tick.PowerPlants && tick.PowerPlants.forEach((powerplant) => {
-    const plantMaster: PlantMaster = masterData[powerplant.name];
+  tick.PowerPlants &&
+    tick.PowerPlants.forEach((powerplant) => {
+      const plantMaster: PlantMaster = masterData[powerplant.name];
 
-    powerplants = [
-      ...powerplants,
-      {
-        id: plantMaster.Klarname,
-        type: plantTypeMapping[plantMaster.Energietraeger],
-        name: plantMaster.KlarnameTR,
-        location: {
-          latitude: plantMaster.Latitude,
-          longitude: plantMaster.Longitude,
+      powerplants = [
+        ...powerplants,
+        {
+          id: plantMaster.Klarname,
+          type: plantTypeMapping[plantMaster.Energietraeger],
+          name: plantMaster.KlarnameTR,
+          location: {
+            latitude: plantMaster.Latitude,
+            longitude: plantMaster.Longitude,
+          },
+          max_power: parsePower(plantMaster.Nettonennleistung),
+          min_power: 0.0,
+          state: {
+            ist: powerplant.ist,
+            potential_plus: powerplant.pot_plus,
+            potential_minus: powerplant.pot_minus,
+            command: powerplant.command,
+          },
         },
-        max_power: parsePower(plantMaster.Nettonennleistung),
-        min_power: 0.0,
-        state: {
-          ist: powerplant.ist,
-          potential_plus: powerplant.pot_plus,
-          potential_minus: powerplant.pot_minus,
-          command: powerplant.command,
-        },
-      },
-    ];
-  });
+      ];
+    });
 
   return powerplants;
 };
@@ -103,7 +105,7 @@ const initialViewport: Viewport = {
 };
 
 export const Map: React.FC = () => {
-  const [viewport, setViewport] = useState(initialViewport);
+  const [viewport, setViewport] = useState<Viewport>(initialViewport);
   const {
     dispatch,
     state: { privacyMode },
@@ -114,8 +116,17 @@ export const Map: React.FC = () => {
 
   const powerplants = enrichTick(tickData[tickData.length - 1]);
 
-  const __dispatch = (powerplant: Powerplant) =>
+  const __dispatch = (powerplant: Powerplant) => {
+    setViewport({
+      latitude: powerplant.location.latitude - 0.4, // -offset
+      longitude: powerplant.location.longitude + 0.2, // +offset
+      zoom: 7.5,
+      transitionDuration: 800,
+      transitionInterpolator: new FlyToInterpolator(),
+      transitionEasing: d3EaseInCubic,
+    });
     !privacyMode && dispatch({ type: ActionType.SELECT_RESOURCE, payload: powerplant });
+  };
 
   return (
     <ReactMapGL
@@ -124,7 +135,7 @@ export const Map: React.FC = () => {
       height="100%"
       // mapStyle="mapbox://styles/mapbox/dark-v8"
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-      onViewportChange={(viewport: Viewport) => setViewport(viewport)}
+      onViewportChange={setViewport}
     >
       {powerplants.map((powerplant, i) => {
         return <Marker key={`${powerplant.name}-${i}`} onClick={__dispatch} powerplant={powerplant} />;

@@ -11,6 +11,7 @@ import {
   extent as d3Extent,
   leastIndex as d3LeastIndex,
 } from 'd3-array';
+import { easeCubicInOut as d3EaseInCubic } from 'd3-ease';
 import { axisLeft as d3AxisLeft } from 'd3-axis';
 import { axisBottom as d3AxisBottom } from 'd3-axis';
 import { timeFormat as d3TimeFormat } from 'd3-time-format';
@@ -38,4 +39,5 @@ export {
   d3Area,
   d3Pointer,
   d3LeastIndex,
+  d3EaseInCubic,
 };
