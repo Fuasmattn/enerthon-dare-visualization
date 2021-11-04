@@ -24,7 +24,7 @@ interface Data {
 }
 const initialState: Data = { timeline: [], tickData: [], currentTick: 0 };
 
-const tickInterval = 50;
+const tickInterval = 20;
 
 // const timelineMock: Timeline = [
 //   { finish: 1622670300000, name: 'CSR1WIND001', start: 1622629800000, value: -1.5 },
