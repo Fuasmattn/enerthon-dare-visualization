@@ -266,7 +266,9 @@ export const Timeline: React.FC = () => {
         <p className="mb-0">
           <strong>DA/RE</strong> Timeline
         </p>
-        <p>debug tick: {currentTick}</p>
+        <p className="mb-0">
+          Selected Grid: <strong>Mitte</strong>
+        </p>
         <motion.button
           type="button"
           animate={animateBtn}

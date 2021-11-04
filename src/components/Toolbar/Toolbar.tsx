@@ -12,14 +12,14 @@ export const Toolbar = () => {
       <button
         className="btn btn-small bg-white"
         onClick={() => {
-          console.log(privacyMode, showTimeline)
+          console.log(privacyMode, showTimeline);
           if (!privacyMode && showTimeline) {
             dispatch({ type: ActionType.DESELECT_RESOURCE });
           }
           dispatch({ type: ActionType.TOGGLE_PRIVACY });
         }}
       >
-        <i className="bi bi-lock-fill me-2"></i>
+        {privacyMode ? <i className="bi bi-lock-fill me-2"></i> : <i className="bi bi-unlock-fill me-2"></i>}
         privacy mode: {privacyMode ? 'on' : 'off'}
       </button>
     </div>
