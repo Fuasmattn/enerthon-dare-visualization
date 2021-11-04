@@ -1,20 +1,100 @@
 import React, { useContext, useState } from 'react';
 import ReactMapGL from 'react-map-gl';
-import { ActionType } from '../../context/types';
+import { DataContext } from '../../context/DataProvider';
+import { ActionType, Tick } from '../../context/types';
 import { UIContext } from '../../context/UIStateProvider';
-import { Resource, ResourceType } from '../../shared/types';
-import { Marker } from './Marker';
+import { masterData, plantTypeMapping } from '../../shared/data';
+import { PlantMaster, Powerplant, PowerplantType } from '../../shared/types';
+import { Marker } from '../Marker/Marker';
 import { Viewport } from './types';
 
-const biogasResource: Resource = {
+const biogasResource: Powerplant = {
   id: 'biooo',
-  type: ResourceType.BIOGAS,
+  type: PowerplantType.BIOGAS,
+  name: "Bio boss",
+  location: {
+    latitude: 50,
+    longitude: 9
+  },
+  max_power: 10,
+  min_power: 0.0,
+  state: {
+    ist: 2.5,
+    potential_plus: 6.0,
+    potential_minus: 2.0
+  }
 };
 
-const waterResource: Resource = {
-  id: 'waterrr',
-  type: ResourceType.WATER,
+const waterResource: Powerplant = {
+  id: 'wind',
+  type: PowerplantType.WIND,
+  name: "wind wonder",
+  location: {
+    latitude: 50.88,
+    longitude: 9.1
+  },
+  max_power: 2.0,
+  min_power: 0.0,
+  state: {
+    ist: 1.0,
+    potential_plus: 0.5,
+    potential_minus: 1.0
+  }
 };
+
+const sunResource: Powerplant = {
+  id: 'sun',
+  type: PowerplantType.SOLAR,
+  name: "super solar",
+  location: {
+    latitude: 50.4,
+    longitude: 9.14
+  },
+  max_power: 2.0,
+  min_power: 0.0,
+  state: {
+    ist: 1.0,
+    potential_plus: 0.5,
+    potential_minus: 0.75
+  }
+};
+
+
+const parsePower = (power: string): number => {
+  const numberAsString = power.replace(" kW", "");
+  const parsedPower = parseFloat(numberAsString);
+
+  return parsedPower / 1000;
+}
+
+
+const enrichTick = (tick: Tick): Powerplant[] => {
+  let powerplants: Powerplant[] = [];
+  tick.PowerPlants.forEach(powerplant => {
+    const plantMaster: PlantMaster = masterData[powerplant.name]
+
+    powerplants = [...powerplants, {
+      id: plantMaster.Klarname,
+      type: plantTypeMapping[plantMaster.Energietraeger],
+      name: plantMaster.KlarnameTR,
+      location: {
+        latitude: plantMaster.Latitude,
+        longitude: plantMaster.Longitude,
+      },
+      max_power: parsePower(plantMaster.Nettonennleistung),
+      min_power: 0.0,
+      state: {
+        ist: powerplant.ist,
+        potential_plus: powerplant.pot_plus,
+        potential_minus: powerplant.pot_minus,
+        command: powerplant.command,
+      }
+    }]
+  })
+  
+  return powerplants;
+}
+
 
 const initialViewport: Viewport = {
   latitude: 50,
@@ -25,6 +105,16 @@ const initialViewport: Viewport = {
 export const Map: React.FC = () => {
   const [viewport, setViewport] = useState(initialViewport);
   const { dispatch } = useContext(UIContext);
+  const {
+    data: { timeline, tickData, currentTick },
+  } = useContext(DataContext);
+
+  const powerplants = enrichTick(tickData[tickData.length - 1])
+
+  console.log(tickData);
+  console.log(powerplants);
+
+  const __dispatch = (powerplant: Powerplant) => dispatch({ type: ActionType.SELECT_RESOURCE, payload: powerplant })
 
   return (
     <ReactMapGL
@@ -35,18 +125,12 @@ export const Map: React.FC = () => {
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onViewportChange={(viewport: Viewport) => setViewport(viewport)}
     >
-      <Marker
-        onClick={() => dispatch({ type: ActionType.SELECT_RESOURCE, payload: biogasResource })}
-        resource={biogasResource}
-        latitude={50}
-        longitude={9}
-      />
-      <Marker
-        onClick={() => dispatch({ type: ActionType.SELECT_RESOURCE, payload: waterResource })}
-        resource={waterResource}
-        latitude={50.88}
-        longitude={9.1}
-      />
+      {powerplants.map((powerplant) => {
+        return <Marker key={powerplant.name}
+          onClick={__dispatch}
+          powerplant={powerplant}
+        />
+      })}
     </ReactMapGL>
   );
 };

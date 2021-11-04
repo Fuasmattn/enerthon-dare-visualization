@@ -1,0 +1,16 @@
+.line {
+    display: flex;
+    flex-direction: row;
+}
+  
+.line:before{
+    content: "";
+    flex: 1 1;
+    border-bottom: 1px solid;
+    margin: auto;
+    width: 100%;
+}
+  
+.line:before {
+    margin-right: 10px
+}
