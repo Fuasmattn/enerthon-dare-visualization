@@ -6,6 +6,7 @@ import {
   d3AxisBottom,
   d3CurveStepAfter,
   d3Extent,
+  d3Pointer,
   d3ScaleLinear,
   d3ScaleTime,
   d3Select,
@@ -165,6 +166,41 @@ export const Timeline: React.FC = () => {
       .attr('d', line(lineData));
   };
 
+  const renderMouseOver = () => {
+    const height = 240;
+    const svg = d3Select('#mouseover');
+    svg.attr('height', height).attr('width', overwidth);
+
+    svg.selectAll('g').remove();
+    const mouseG = svg.append('g').attr('class', 'mouse-over-effects');
+
+    mouseG
+      .append('path')
+      .attr('class', 'mouse-line')
+      .style('stroke', '#636363')
+      .style('stroke-width', '1px')
+      .style('opacity', '0');
+
+    mouseG
+      .append('rect')
+      .attr('width', overwidth)
+      .attr('height', height)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'all')
+      .on('mouseout', function () {
+        d3Select('.mouse-line').style('opacity', '0');
+      })
+      .on('mouseover', function () {
+        d3Select('.mouse-line').style('opacity', '1');
+      })
+      .on('mousemove', function (event, data) {
+        const pointer = d3Pointer(event);
+        d3Select('.mouse-line').attr('d', function () {
+          return `M${pointer[0]}, ${height} ${pointer[0]}, -100`;
+        });
+      });
+  };
+
   const renderAxis = () => {
     const paddingTop = 0;
     const height = 30;
@@ -185,6 +221,7 @@ export const Timeline: React.FC = () => {
     renderEventTimeline();
     renderPowerTimeline();
     renderAxis();
+    renderMouseOver();
 
     containerRef.current && containerRef.current.scrollBy(overwidth, 0);
   };
@@ -234,7 +271,8 @@ export const Timeline: React.FC = () => {
         </motion.button>
       </div>
       <div className="d-flex">
-        <div style={{ overflowX: 'scroll' }} id="container" ref={containerRef}>
+        <div className="position-relative" style={{ overflowX: 'scroll' }} id="container" ref={containerRef}>
+          <svg className="position-absolute left-0 top-0" id="mouseover"></svg>
           <svg style={{ background: '#7CBE8120' }} id="power-timeline"></svg>
           <svg style={{ background: '#63636320' }} id="event-timeline"></svg>
           <svg id="timeline-axis"></svg>

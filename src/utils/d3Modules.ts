@@ -1,4 +1,4 @@
-import { select as d3Select, selectAll as d3SelectAll } from 'd3-selection';
+import { select as d3Select, selectAll as d3SelectAll, pointer as d3Pointer } from 'd3-selection';
 import { transition as d3Transition } from 'd3-transition';
 import { interpolateZoom as d3InterpolateZoom } from 'd3-interpolate';
 import { dispatch as d3Dispatch } from 'd3-dispatch';
@@ -9,7 +9,6 @@ import { axisLeft as d3AxisLeft } from 'd3-axis';
 import { axisBottom as d3AxisBottom } from 'd3-axis';
 import { timeFormat as d3TimeFormat } from 'd3-time-format';
 import { line as d3Line, area as d3Area, curveStepAfter as d3CurveStepAfter } from 'd3-shape';
-
 export {
   d3Select,
   d3SelectAll,
@@ -31,4 +30,5 @@ export {
   d3Extent,
   d3CurveStepAfter,
   d3Area,
+  d3Pointer,
 };
