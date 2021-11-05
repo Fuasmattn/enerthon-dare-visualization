@@ -14,8 +14,8 @@ export const masterData: MasterData = {
 		"TRID": "D1000000011",
 		"Nettonennleistung": "3450 kW",
 		"GeokoordinatenTRs": "BreiteNord=41,335162 LaengeOst=9,753427",
-		"Latitude": 41.335162,
-		"Longitude": 9.753427
+		"Latitude": 49.438095512288015,
+		"Longitude": 9.871879553398221
     },
     "CSR1WIND002": {
 		"Klarname": "Wind002",
@@ -30,8 +30,8 @@ export const masterData: MasterData = {
 		"TRID": "D1000000012",
 		"Nettonennleistung": "3.300 kW",
 		"GeokoordinatenTRs": "BreiteNord=49,602228 LaengeOst=9,61516",
-		"Latitude": 49.602228,
-		"Longitude": 9.61516
+		"Latitude": 49.599735467629884,
+		"Longitude": 9.612588052219202
     },
     "CSRSONN003": {
 		"Klarname": "Sun003",
@@ -94,8 +94,8 @@ export const masterData: MasterData = {
 		"TRID": "D1000000016",
 		"Nettonennleistung": "500 kW",
 		"GeokoordinatenTRs": "BreiteNord=48,017241LaengeOst=8,602017",
-		"Latitude": 48.017241,
-		"Longitude": 8.602017
+		"Latitude": 48.868482146631536,
+		"Longitude": 9.052504626561257
     }
 }
 
