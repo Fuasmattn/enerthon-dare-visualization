@@ -8,6 +8,8 @@ import Solar from '../../assets/icons/solar.svg';
 import Wind from '../../assets/icons/wind.svg';
 import Biogas from '../../assets/icons/biogas.svg';
 import { PowerState } from './PowerState';
+import { usePrevious } from '../../hooks/usePrevious';
+import { FillCircle, LoadingCircle } from './Spinner/Spinner';
 
 
 const ZOOM_BORDER = 7;
@@ -52,6 +54,7 @@ const get_detail_style = (viewport: WebMercatorViewport | undefined) => {
 
 export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
   const context = React.useContext(MapContext);
+  const prev_powerplant = usePrevious(powerplant)
 
   const [x, y] = context.viewport ? context.viewport.project([powerplant.location.longitude, powerplant.location.latitude]) : [0, 0];
 
@@ -69,16 +72,18 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
   //TODO: define optimal zoom level
   return (
     <div onClick={() => onClick(powerplant)} className="position-absolute d-flex flex-row" style={markerStyle}>
-      <div className="d-flex flex-column align-center">
-        <motion.div className="p-2" animate={image_style}>
+      <div className="position-relative align-center" style={{width: '100px', height: '100px'}}>
+        <motion.div className="p-2 position-absolute" animate={image_style}>
           <img
             src={icon} 
             alt={powerplant.type} 
             style={{width: '100%', height: '100%'}}
           />
         </motion.div>
+        <LoadingCircle className="position-absolute" radius={"120px"} color={"green"} strokeWidth="10px" />
+
         
-        <AnimatePresence>
+        {/* <AnimatePresence>
           {(context.viewport && context.viewport.zoom > ZOOM_BORDER) && (
             <motion.div
               className="text-center"
@@ -87,7 +92,7 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
               {powerplant.name}
             </motion.div>  
           )} 
-        </AnimatePresence>
+        </AnimatePresence> */}
       </div>
       <AnimatePresence>
         {(context.viewport && context.viewport.zoom > ZOOM_BORDER) && (
@@ -96,6 +101,10 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
           </motion.div>
         )}
       </AnimatePresence>
+      {/* <div>
+        Now: {powerplant.state.command}, Prev: {prev_powerplant?.state.command}
+      </div> */}
+      <FillCircle radius={"50px"} color={"green"} strokeWidth="10px"/>
     </div>
   );
 };
