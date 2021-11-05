@@ -105,17 +105,6 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
           </div>
         )}
 
-        
-        {/* <AnimatePresence>
-          {(context.viewport && context.viewport.zoom > ZOOM_BORDER) && (
-            <motion.div
-              className="text-center"
-              animate={detail_style}
-            >
-              {powerplant.name}
-            </motion.div>  
-          )} 
-        </AnimatePresence> */}
       </div>
       <AnimatePresence>
         {(context.viewport && context.viewport.zoom > ZOOM_BORDER) && (
@@ -123,11 +112,7 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
             <PowerState max_power={powerplant.max_power} min_power={powerplant.min_power} state={powerplant.state} />
           </motion.div>
         )}
-      </AnimatePresence>
-      {/* <div>
-        Now: {powerplant.state.command}, Prev: {prev_powerplant?.state.command}
-      </div> */}
-      
+      </AnimatePresence>      
     </div>
   );
 };

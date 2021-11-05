@@ -8,5 +8,6 @@ export interface Viewport {
   transitionDuration?: number;
   transitionInterpolator?: any;
   transitionEasing?: any;
+  onTransitionStart?: any;
 }
 
