@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { MapContext, WebMercatorViewport } from 'react-map-gl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MarkerProps } from './types';
@@ -10,7 +10,6 @@ import Biogas from '../../assets/icons/biogas.svg';
 import { PowerState } from './PowerState';
 import { usePrevious } from '../../hooks/usePrevious';
 import { FillCircle, LoadingCircle } from './Spinner/Spinner';
-
 
 const ZOOM_BORDER = 7;
 
@@ -26,31 +25,31 @@ const getIcon = (icon_type: PowerplantType) => {
     default:
       throw new Error(`Unknown power plant type ${icon_type}`);
   }
-}
+};
 
 const getImageStyle = (viewport: WebMercatorViewport | undefined) => {
   if (!viewport) {
-    return { width: '0px', height: '0px'}; 
+    return { width: '0px', height: '0px' };
   }
 
   if (viewport.zoom > ZOOM_BORDER) {
-    return { width: '100px', height: '100px'}; 
+    return { width: '100px', height: '100px' };
   } else {
-    return { width: '50px', height: '50px'}; 
+    return { width: '50px', height: '50px' };
   }
-}
+};
 
 const getDetailStyle = (viewport: WebMercatorViewport | undefined) => {
   if (!viewport) {
-    return {opacity: 0}
+    return { opacity: 0 };
   }
 
   if (viewport.zoom > ZOOM_BORDER) {
-    return { opacity: 1 }; 
+    return { opacity: 1 };
   } else {
-    return { opacity: 0 }; 
+    return { opacity: 0 };
   }
-}
+};
 
 const getSpinnerStyle = (imageStyle: {width: string, height: string}) => {
   const widthNumber = parseInt(imageStyle.width.replace("px", ""))
@@ -67,7 +66,9 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
   const context = React.useContext(MapContext);
   const prev_powerplant = usePrevious(powerplant)
 
-  const [x, y] = context.viewport ? context.viewport.project([powerplant.location.longitude, powerplant.location.latitude]) : [0, 0];
+  const [x, y] = context.viewport
+    ? context.viewport.project([powerplant.location.longitude, powerplant.location.latitude])
+    : [0, 0];
 
   const markerStyle: React.CSSProperties = {
     left: x,

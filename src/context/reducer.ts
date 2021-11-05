@@ -19,6 +19,12 @@ export const reducer = (state: UIState, action: Action) => {
         showTimeline: !state.showTimeline,
       };
 
+    case ActionType.TOGGLE_PRIVACY:
+      return {
+        ...state,
+        privacyMode: !state.privacyMode,
+      };
+
     default:
       return state;
   }

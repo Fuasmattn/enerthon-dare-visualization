@@ -40,14 +40,24 @@ export const DataProvider: React.FC = ({ children }) => {
   const interval = useRef<NodeJS.Timer>(null);
 
   const fetchTimeline = async () => {
-    const response = await fetch('http://localhost:8890/get_timeline');
-    return await response.json();
+    try {
+      const response = await fetch('http://localhost:8890/get_timeline');
+      return await response.json();
+    } catch (e) {
+      interval.current && clearInterval(interval.current);
+    }
   };
 
   const fetchTick = async () => {
     try {
       const response = await fetch('http://localhost:8890/get_tick');
-      return await response.json();
+      const result = await response.json();
+      if (result.message && result.message === 'No more data') {
+        interval.current && clearInterval(interval.current);
+        console.info('done loading')
+      } else {
+        return result;
+      }
     } catch (e) {
       interval.current && clearInterval(interval.current);
     }
