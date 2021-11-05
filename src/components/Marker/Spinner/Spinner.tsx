@@ -3,7 +3,7 @@ import './style.css'
 import { SpinnerProps } from './types';
 import { motion } from 'framer-motion';
 
-export const FillCircle: React.FC<SpinnerProps> = ({className, radius, color, strokeWidth}) => {
+export const FillCircle: React.FC<SpinnerProps> = ({className, style, radius, color, strokeWidth}) => {
     const spinnerStyle = {
         border: strokeWidth + " solid rgba(0, 0, 0, 0.1)",
         borderRadius: "50%",
@@ -12,7 +12,7 @@ export const FillCircle: React.FC<SpinnerProps> = ({className, radius, color, st
     }
 
     return (
-        <div className={className} id='loading' style={{width: radius, height: radius}}>
+        <motion.div className={className} id='loading' style={style} animate={{width: radius, height: radius}}>
             <div className="position-absolute" style={spinnerStyle} />
 
             <div className='hold left'>
@@ -22,7 +22,7 @@ export const FillCircle: React.FC<SpinnerProps> = ({className, radius, color, st
                 <div className='fill' style={{borderColor: color, borderWidth: strokeWidth}}/>
             </div>
         
-        </div>
+        </motion.div>
     )
 }
 

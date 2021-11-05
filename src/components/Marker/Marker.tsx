@@ -15,7 +15,7 @@ import { FillCircle, LoadingCircle } from './Spinner/Spinner';
 const ZOOM_BORDER = 7;
 
 
-const get_icon = (icon_type: PowerplantType) => {
+const getIcon = (icon_type: PowerplantType) => {
   switch (icon_type) {
     case PowerplantType.SOLAR:
       return Solar;
@@ -28,7 +28,7 @@ const get_icon = (icon_type: PowerplantType) => {
   }
 }
 
-const get_image_style = (viewport: WebMercatorViewport | undefined) => {
+const getImageStyle = (viewport: WebMercatorViewport | undefined) => {
   if (!viewport) {
     return { width: '0px', height: '0px'}; 
   }
@@ -40,7 +40,7 @@ const get_image_style = (viewport: WebMercatorViewport | undefined) => {
   }
 }
 
-const get_detail_style = (viewport: WebMercatorViewport | undefined) => {
+const getDetailStyle = (viewport: WebMercatorViewport | undefined) => {
   if (!viewport) {
     return {opacity: 0}
   }
@@ -49,6 +49,17 @@ const get_detail_style = (viewport: WebMercatorViewport | undefined) => {
     return { opacity: 1 }; 
   } else {
     return { opacity: 0 }; 
+  }
+}
+
+const getSpinnerStyle = (imageStyle: {width: string, height: string}) => {
+  const widthNumber = parseInt(imageStyle.width.replace("px", ""))
+  const heightNumber = parseInt(imageStyle.width.replace("px", ""))
+
+  const _spinnerRadius = Math.max(widthNumber, heightNumber) / Math.sqrt(2) * 2
+  return { 
+    radius: _spinnerRadius + "px",
+    strokeWidth: (widthNumber / 10) + "px"
   }
 }
 
@@ -63,24 +74,35 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
     top: y,
   };
 
-  const icon = get_icon(powerplant.type)
-  const image_style = get_image_style(context.viewport)
-  const detail_style = get_detail_style(context.viewport)
+  const icon = getIcon(powerplant.type)
+  const imageStyle = getImageStyle(context.viewport)
+  const detailStyle = getDetailStyle(context.viewport)
+  const spinnerStyle = getSpinnerStyle(imageStyle)
 
-  
+  const dispatchRequestPending = powerplant.state.command !== 0
+  const dispatchRunning = (powerplant.state.command !== prev_powerplant?.state.command) && prev_powerplant?.state.command !== 0
 
   //TODO: define optimal zoom level
   return (
     <div onClick={() => onClick(powerplant)} className="position-absolute d-flex flex-row" style={markerStyle}>
-      <div className="position-relative align-center" style={{width: '100px', height: '100px'}}>
-        <motion.div className="p-2 position-absolute" animate={image_style}>
+      <div className="position-relative align-center" style={imageStyle}>
+        <motion.div className="p-2 position-absolute" animate={imageStyle}>
           <img
             src={icon} 
             alt={powerplant.type} 
             style={{width: '100%', height: '100%'}}
           />
         </motion.div>
-        <LoadingCircle className="position-absolute" radius={"120px"} color={"green"} strokeWidth="10px" />
+        {dispatchRequestPending && (
+          <div className="position-absolute top-50 start-50 translate-middle">
+            <LoadingCircle radius={spinnerStyle.radius} color={"green"} strokeWidth={spinnerStyle.strokeWidth} />
+          </div>
+        )}
+        {dispatchRunning && (
+          <div className="position-absolute top-50 start-50 translate-middle">
+            <FillCircle radius={spinnerStyle.radius} color={"green"} strokeWidth={spinnerStyle.strokeWidth} />
+          </div>
+        )}
 
         
         {/* <AnimatePresence>
@@ -96,7 +118,7 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
       </div>
       <AnimatePresence>
         {(context.viewport && context.viewport.zoom > ZOOM_BORDER) && (
-          <motion.div animate={detail_style}>
+          <motion.div style={{marginLeft: "25px"}} animate={detailStyle}>
             <PowerState max_power={powerplant.max_power} min_power={powerplant.min_power} state={powerplant.state} />
           </motion.div>
         )}
@@ -104,7 +126,7 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
       {/* <div>
         Now: {powerplant.state.command}, Prev: {prev_powerplant?.state.command}
       </div> */}
-      <FillCircle radius={"50px"} color={"green"} strokeWidth="10px"/>
+      
     </div>
   );
 };
