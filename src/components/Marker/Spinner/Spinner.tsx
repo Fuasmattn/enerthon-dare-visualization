@@ -11,18 +11,21 @@ export const FillCircle: React.FC<SpinnerProps> = ({className, style, radius, co
         height: radius,
     }
 
+    const radiusAsNumber = parseInt(radius.replace("px", ""))
+    const fillStyle = { clip: `rect(0px, ${radiusAsNumber / 2}px, ${radius}, 0px`}
+    const holdStyle = { clip: `rect(0px, ${radius}, ${radius}, ${radiusAsNumber / 2}px`}
+
     return (
-        <motion.div className={className} id='loading' style={style} animate={{width: radius, height: radius}}>
+        <div className={className} id='loading' style={{...style, width: radius, height: radius}}>
             <div className="position-absolute" style={spinnerStyle} />
 
-            <div className='hold left'>
-                <div className='fill' style={{borderColor: color, borderWidth: strokeWidth}}/>
+            <div className='hold left' style={holdStyle}>
+                <div className='fill' style={{...fillStyle, borderColor: color, borderWidth: strokeWidth}}/>
             </div>
-            <div className='hold right'>
-                <div className='fill' style={{borderColor: color, borderWidth: strokeWidth}}/>
+            <div className='hold right' style={holdStyle}>
+                <div className='fill' style={{...fillStyle, borderColor: color, borderWidth: strokeWidth}}/>
             </div>
-        
-        </motion.div>
+        </div>
     )
 }
 

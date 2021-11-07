@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import ReactMapGL, { FlyToInterpolator, NavigationControl, Source, Layer} from 'react-map-gl';
+import ReactMapGL, { FlyToInterpolator, NavigationControl, Source, Layer, MapEvent} from 'react-map-gl';
 import { DataContext } from '../../context/DataProvider';
 import { ActionType, Tick } from '../../context/types';
 import { UIContext } from '../../context/UIStateProvider';
@@ -62,8 +62,19 @@ const getGeoJson = (powerplants: Powerplant[]): FeatureCollection<Geometry, GeoJ
 const initialViewport: Viewport = {
   latitude: 48,
   longitude: 11,
-  zoom: 6.5,
+  zoom: 7,
 };
+
+const onClickViewport = (latitude: number, longitude: number): Viewport => {
+  return {
+    latitude: latitude,
+    longitude: longitude,
+    zoom: 9.1,
+    transitionDuration: 800,
+    transitionInterpolator: new FlyToInterpolator(),
+    transitionEasing: d3EaseInCubic,
+  }
+}
 
 const navControlStyle = {
   right: 10,
@@ -85,22 +96,23 @@ const getDispatchViewport = (dispatchPlant: Powerplant | undefined, prevDispatch
   if (dispatchStarted) {
     console.log("Dispatch started");
     return {
-      latitude: dispatchPlant.location.latitude - 0.4, // -offset
-      longitude: dispatchPlant.location.longitude + 0.2, // +offset
-      zoom: 7.5,
+      latitude: dispatchPlant.location.latitude,
+      longitude: dispatchPlant.location.longitude,
+      zoom: 9.1,
       transitionDuration: 800,
       transitionInterpolator: new FlyToInterpolator(),
       transitionEasing: d3EaseInCubic,
     } 
-  } else if (dispatchFinished) {
-    return { 
-      ...initialViewport,
-      transitionDuration: 800,
-      transitionInterpolator: new FlyToInterpolator(),
-      transitionEasing: d3EaseInCubic,
-      onTransitionStart: () => new Promise(resolve => setTimeout(resolve, 4000)) // TODO: find out how this can work https://reactnavigation.org/docs/2.x/transitioner/
-    };
   }
+  // } else if (dispatchFinished) {
+  //   return { 
+  //     ...initialViewport,
+  //     transitionDuration: 800,
+  //     transitionInterpolator: new FlyToInterpolator(),
+  //     transitionEasing: d3EaseInCubic,
+  //     onTransitionStart: () => new Promise(resolve => setTimeout(resolve, 4000)) // TODO: find out how this can work https://reactnavigation.org/docs/2.x/transitioner/
+  //   };
+  // }
 }
 
 export const Map: React.FC = () => {
@@ -114,33 +126,22 @@ export const Map: React.FC = () => {
   } = useContext(DataContext);
 
   const powerplants = enrichTick(tickData[tickData.length - 1]);
-  const dispatchPlant = findDispatchPlant(powerplants);
-  const prevDispatchPlant = usePrevious(dispatchPlant);
+  const redispatchPlant = findDispatchPlant(powerplants);
+  const prevDispatchPlant = usePrevious(redispatchPlant);
   
-  const dispatchViewport = getDispatchViewport(dispatchPlant, prevDispatchPlant);
+  const redispatchViewport = getDispatchViewport(redispatchPlant, prevDispatchPlant);
   
   useEffect(
     () => {
-      if (dispatchViewport) {
-        setViewport(dispatchViewport);
+      if (redispatchViewport) {
+        setViewport(redispatchViewport);
       } 
     }
   )
-  
-  
-  console.log("dispatchPlant && !prevDispatchPlant: " + (dispatchPlant && !prevDispatchPlant) + " (" + dispatchPlant + ", " + prevDispatchPlant + ")")
-  console.log("!dispatchPlant && prevDispatchPlant: " + (!dispatchPlant && prevDispatchPlant) + " (" + dispatchPlant + ", " + prevDispatchPlant + ")")
 
-  const __dispatch: (powerplant: Powerplant) => void = dispatchPlant ?
+  const __dispatch: (powerplant: Powerplant) => void = redispatchPlant ?
     (powerplant: Powerplant) =>  {
-        setViewport({
-          latitude: powerplant.location.latitude - 0.4, // -offset
-          longitude: powerplant.location.longitude + 0.2, // +offset
-          zoom: 7.5,
-          transitionDuration: 800,
-          transitionInterpolator: new FlyToInterpolator(),
-          transitionEasing: d3EaseInCubic,
-        });
+        setViewport(onClickViewport(powerplant.location.latitude, powerplant.location.longitude));
         !privacyMode && dispatch({ type: ActionType.SELECT_RESOURCE, payload: powerplant });
     } : 
     (powerplant: Powerplant) => {
@@ -156,13 +157,17 @@ export const Map: React.FC = () => {
       height="100%"
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onViewportChange={setViewport}
+      onClick={(event) => {
+        const feature = event.features?.find(feature => feature.source === "powerplants")
+        feature ? setViewport(onClickViewport(event.lngLat[1], event.lngLat[0])) : null
+      }}
     >
-      {powerplants.map((powerplant, i) => {
+      {(viewport.zoom > 6.5) && powerplants.map((powerplant, i) => {
         return <Marker key={`${powerplant.name}-${i}`} onClick={__dispatch} powerplant={powerplant} />;
       })}
-      {(viewport.zoom < 4) && (
-        <Source id="my-data" type="geojson" data={getGeoJson(powerplants)}>
-          <Layer id='point' type='circle' paint={{'circle-radius': 10, 'circle-color': 'red'}} />
+      {(viewport.zoom <= 6.5) && (
+        <Source id="powerplants" type="geojson" data={getGeoJson(powerplants)}>
+          <Layer id='point' type='circle' paint={{'circle-radius': 7, 'circle-color': 'red', 'circle-opacity': 0.7}} />
         </Source>
       )}
         
