@@ -13,7 +13,7 @@ import { usePrevious } from '../../hooks/usePrevious';
 import { FillCircle, LoadingCircle } from './Spinner/Spinner';
 import { useDelayUnmount } from '../../hooks/useDelayUnmount';
 
-const ZOOM_BORDER = 9;
+const ZOOM_BORDER = 11.9;
 
 const getIcon = (icon_type: PowerplantType) => {
   switch (icon_type) {

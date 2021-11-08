@@ -68,9 +68,9 @@ const getGeoJson = (powerplants: Powerplant[]): FeatureCollection<Geometry, GeoJ
 };
 
 const initialViewport: Viewport = {
-  latitude: 48,
-  longitude: 11,
-  zoom: 7,
+  latitude: 48.39186546733423,
+  longitude: 9.37114431149688,
+  zoom: 7.127492487395349
 };
 
 const onClickViewport = (latitude: number, longitude: number): Viewport => {
@@ -161,21 +161,22 @@ export const Map: React.FC = () => {
       height="100%"
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onViewportChange={setViewport}
+      minZoom={7.127492487395349}
       onClick={(event) => {
         const feature = event.features?.find((feature) => feature.source === 'powerplants');
         feature ? setViewport(onClickViewport(event.lngLat[1], event.lngLat[0])) : null;
       }}
     >
-      {viewport.zoom > 6.5 &&
+      {viewport.zoom > 9 &&
         powerplants.map((powerplant, i) => {
           return <Marker key={`${powerplant.name}-${i}`} onClick={__dispatch} powerplant={powerplant} />;
         })}
-      {viewport.zoom <= 6.5 && (
+      {viewport.zoom <= 9 && (
         <Source id="powerplants" type="geojson" data={getGeoJson(powerplants)}>
           <Layer
             id="point"
             type="circle"
-            paint={{ 'circle-radius': 7, 'circle-color': 'red', 'circle-opacity': 0.7 }}
+            paint={{ 'circle-radius': 5, 'circle-color': 'black', 'circle-opacity': 0.7 }}
           />
         </Source>
       )}
