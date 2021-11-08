@@ -7,6 +7,7 @@ const LINE_HIGHT = 15;
 const FONT_SIZE = 14;
 
 const DURATION = 2;
+const INITIAL_DURATION = 0.5;
 
 export const PowerState: React.FC<PowerStateProps> = ({ max_power, min_power, state }) => {
   const istPercents = 100 - (100 * state.ist) / max_power;
@@ -38,7 +39,7 @@ export const PowerState: React.FC<PowerStateProps> = ({ max_power, min_power, st
         <motion.line
           animate={{ y: Math.max(Math.min(istPercents, 98.5), 2) }}
           initial={{ y: 100 }}
-          transition={{ duration: DURATION }}
+          transition={{ duration: istPercents > 0 ? DURATION : INITIAL_DURATION }}
           x1="0"
           y1="0"
           x2="70"
@@ -56,7 +57,7 @@ export const PowerState: React.FC<PowerStateProps> = ({ max_power, min_power, st
           width="50"
           animate={{ height: 100 - istPercents, y: istPercents }}
           initial={{ height: 0, y: 100 }}
-          transition={{ duration: DURATION }}
+          transition={{ duration: istPercents > 0 ? DURATION : INITIAL_DURATION }}
           x="0"
           style={{ fill: 'url(#gradient)', opacity: 0.5 }}
         />
@@ -73,7 +74,7 @@ export const PowerState: React.FC<PowerStateProps> = ({ max_power, min_power, st
             x2="60"
             animate={{ y1: istPercents - 3, y2: plusPercents }}
             initial={{ y1: 0 + LINE_HIGHT, y2: 0 + LINE_HIGHT }}
-            transition={{ duration: DURATION }}
+            transition={{ duration: istPercents > 0 ? DURATION : INITIAL_DURATION }}
             stroke="rgb(126,182,208)"
             strokeWidth="3px"
             markerEnd="url(#arrow)"
@@ -86,7 +87,7 @@ export const PowerState: React.FC<PowerStateProps> = ({ max_power, min_power, st
             x2="60"
             animate={{ y1: istPercents + 3, y2: minusPercents }}
             initial={{ y1: 100 - LINE_HIGHT, y2: 100 - LINE_HIGHT }}
-            transition={{ duration: DURATION }}
+            transition={{ duration: istPercents > 0 ? DURATION : INITIAL_DURATION }}
             stroke="rgb(126,182,208"
             strokeWidth="3px"
             markerEnd="url(#arrow)"
