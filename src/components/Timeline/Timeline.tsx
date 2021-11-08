@@ -104,7 +104,7 @@ export const Timeline: React.FC = () => {
       .enter()
       .append('text')
       .attr('transform', `translate(${padding.left - 15}, ${paddingTop})`)
-      .text((d) => `${Math.abs(d.value)} MW`)
+      .text((d) => `${Math.abs(d.value).toFixed(2)} MW`)
       .style('font-size', 13)
       .attr('x', (d) => xScale(d.start) + 25)
       .attr('text-anchor', 'start')
@@ -256,7 +256,7 @@ export const Timeline: React.FC = () => {
     svg.selectAll('g').remove();
 
     // @ts-ignore
-    const xAxis = d3AxisBottom(xScale).tickFormat(d3TimeFormat('%B %d %H:%m'));
+    const xAxis = d3AxisBottom(xScale).ticks(30).tickFormat(d3TimeFormat('%b %d, %H:%M'));
     svg
       .append('g')
       .attr('transform', `translate(${padding.left}, ${paddingTop * 4})`)
@@ -324,10 +324,29 @@ export const Timeline: React.FC = () => {
         </motion.button>
       </div>
       <div className="d-flex">
-        <div className="position-relative" style={{ overflowX: 'scroll' }} id="container" ref={containerRef}>
+        <div
+          style={{
+            position: 'absolute',
+            marginTop: -5,
+            right: '450px', // 300 + 150 legend
+            // borderRight: '4px solid #636363',
+            height: 215,
+            width: 3,
+            borderRadius: 3,
+            background: '#636363',
+            zIndex: 99,
+          }}
+        ></div>
+
+        <div
+          className="position-relative"
+          style={{ overflowX: 'scroll' }}
+          id="container"
+          ref={containerRef}
+        >
           <svg className="position-absolute left-0 top-0" id="mouseover"></svg>
-          <svg style={{ background: '#7CBE8120' }} id="power-timeline"></svg>
-          <svg style={{ background: '#63636320' }} id="event-timeline"></svg>
+          <svg style={{ background: '#7CBE8120', paddingRight: '300px' }} id="power-timeline"></svg>
+          <svg style={{ background: '#63636320', paddingRight: '300px' }} id="event-timeline"></svg>
           <svg id="timeline-axis"></svg>
         </div>
         <div>
