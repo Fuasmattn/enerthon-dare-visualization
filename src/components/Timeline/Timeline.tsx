@@ -53,11 +53,12 @@ export const Timeline: React.FC = () => {
   const xScale = d3ScaleTime()
     // @ts-ignore
     .domain(dataXrange)
-    .range([0, 4000]);
+    .range([0, 5000]);
 
   const minX = xScale(lineData[0].x);
   const maxX = xScale(lineData[lineData.length - 1].x);
-  const overwidth = Math.max(maxX - minX, width) + margin.left + margin.right;
+  // const overwidth = Math.max(maxX - minX, width) + margin.left + margin.right;
+  const overwidth = maxX;
 
   const renderEventTimeline = () => {
     const paddingTop = 10;
@@ -89,7 +90,7 @@ export const Timeline: React.FC = () => {
       .enter()
       .append('line')
       .attr('transform', `translate(${padding.left}, ${paddingTop})`)
-      .attr('x1', (d) => xScale(d.start) + 10)
+      .attr('x1', (d) => xScale(d.start))
       .attr('y1', 30)
       .attr('x2', (d) => xScale(d.finish))
       .attr('y2', 30)
@@ -328,7 +329,7 @@ export const Timeline: React.FC = () => {
           style={{
             position: 'absolute',
             marginTop: -5,
-            right: '450px', // 300 + 150 legend
+            right: '150px', // 300 + 150 legend
             // borderRight: '4px solid #636363',
             height: 215,
             width: 3,
@@ -338,15 +339,10 @@ export const Timeline: React.FC = () => {
           }}
         ></div>
 
-        <div
-          className="position-relative"
-          style={{ overflowX: 'scroll' }}
-          id="container"
-          ref={containerRef}
-        >
+        <div className="position-relative" style={{ overflowX: 'scroll' }} id="container" ref={containerRef}>
           <svg className="position-absolute left-0 top-0" id="mouseover"></svg>
-          <svg style={{ background: '#7CBE8120', paddingRight: '300px' }} id="power-timeline"></svg>
-          <svg style={{ background: '#63636320', paddingRight: '300px' }} id="event-timeline"></svg>
+          <svg style={{ background: '#7CBE8120', paddingRight: 0 }} id="power-timeline"></svg>
+          <svg style={{ background: '#63636320', paddingRight: 0 }} id="event-timeline"></svg>
           <svg id="timeline-axis"></svg>
         </div>
         <div>

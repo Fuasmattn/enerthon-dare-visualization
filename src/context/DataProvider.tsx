@@ -54,7 +54,6 @@ export const DataProvider: React.FC = ({ children }) => {
       const result = await response.json();
       if (result.message && result.message === 'No more data') {
         interval.current && clearInterval(interval.current);
-        console.info('done loading')
       } else {
         return result;
       }
@@ -65,8 +64,8 @@ export const DataProvider: React.FC = ({ children }) => {
 
   const fetchData = async () => {
     try {
-      const timeline = await fetchTimeline();
       const tick = await fetchTick();
+      const timeline = await fetchTimeline();
       tick && timeline && setState((state) => ({ ...state, timeline, tickData: [...state.tickData, tick] }));
     } catch (e) {
       interval.current && clearInterval(interval.current);
