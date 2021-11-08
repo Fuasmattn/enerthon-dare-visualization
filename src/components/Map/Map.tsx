@@ -70,7 +70,7 @@ const getGeoJson = (powerplants: Powerplant[]): FeatureCollection<Geometry, GeoJ
 const initialViewport: Viewport = {
   latitude: 48.39186546733423,
   longitude: 9.37114431149688,
-  zoom: 7.127492487395349
+  zoom: 7.127492487395349,
 };
 
 const onClickViewport = (latitude: number, longitude: number): Viewport => {
@@ -147,6 +147,7 @@ export const Map: React.FC = () => {
 
   const __dispatch: (powerplant: Powerplant) => void = redispatchPlant
     ? (powerplant: Powerplant) => {
+        setViewport(onClickViewport(powerplant.location.latitude, powerplant.location.longitude));
         !privacyMode && dispatch({ type: ActionType.SELECT_RESOURCE, payload: powerplant });
       }
     : (powerplant: Powerplant) => {
