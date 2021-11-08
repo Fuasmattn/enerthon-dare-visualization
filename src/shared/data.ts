@@ -28,7 +28,7 @@ export const masterData: MasterData = {
 		"MasterNrTR": "SEE931136456792",
 		"KlarnameTR": "WEA1",
 		"TRID": "D1000000012",
-		"Nettonennleistung": "3.300 kW",
+		"Nettonennleistung": "3300 kW",
 		"GeokoordinatenTRs": "BreiteNord=49,602228 LaengeOst=9,61516",
 		"Latitude": 49.599735467629884,
 		"Longitude": 9.612588052219202
