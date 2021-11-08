@@ -15,7 +15,6 @@ import { useDelayUnmount } from '../../hooks/useDelayUnmount';
 
 const ZOOM_BORDER = 9;
 
-
 const getIcon = (icon_type: PowerplantType) => {
   switch (icon_type) {
     case PowerplantType.SOLAR:
@@ -35,7 +34,7 @@ const getImageStyle = (viewport: WebMercatorViewport | undefined) => {
   }
 
   if (viewport.zoom > ZOOM_BORDER) {
-    return { width: '100px', height: '100px' };
+    return { width: '70px', height: '70px' };
   } else {
     return { width: '50px', height: '50px' };
   }
@@ -53,22 +52,28 @@ const getDetailStyle = (viewport: WebMercatorViewport | undefined) => {
   }
 };
 
-const getSpinnerStyle = (imageStyle: {width: string, height: string}) => {
-  const widthNumber = parseInt(imageStyle.width.replace("px", ""))
-  const heightNumber = parseInt(imageStyle.width.replace("px", ""))
+const getSpinnerStyle = (imageStyle: { width: string; height: string }) => {
+  const widthNumber = parseInt(imageStyle.width.replace('px', ''));
+  const heightNumber = parseInt(imageStyle.width.replace('px', ''));
 
-  const _spinnerRadius = Math.max(widthNumber, heightNumber) / Math.sqrt(2) * 2
-  return { 
-    radius: _spinnerRadius + "px",
-    strokeWidth: (widthNumber / 10) + "px"
-  }
-}
+  const _spinnerRadius = (Math.max(widthNumber, heightNumber) / Math.sqrt(2)) * 2;
+  return {
+    radius: _spinnerRadius + 'px',
+    strokeWidth: widthNumber / 10 + 'px',
+  };
+};
 
 const getRedispatchAmountLable = (powerplant: Powerplant) => {
   return (
-    <div 
-      className="position-absolute top-100 start-50 translate-middle-x d-flex flex-row justify-content-around align-items-center" 
-      style={{marginTop: "30px", width: "90px", height: "40px", backgroundColor: "rgba(0,0,0,0.1)", borderRadius: "12%"}}
+    <div
+      className="position-absolute top-100 start-50 translate-middle-x d-flex flex-row justify-content-around align-items-center"
+      style={{
+        marginTop: '30px',
+        width: '90px',
+        height: '40px',
+        backgroundColor: 'rgba(0,0,0,0.1)',
+        borderRadius: '12%',
+      }}
     >
       <svg width="10px" height="100%" viewBox="0 0 10 100">
         <defs>
@@ -76,20 +81,20 @@ const getRedispatchAmountLable = (powerplant: Powerplant) => {
             <path d="M2,1 L2,7.5 L5,6 L2,4.5" style={{ fill: 'green' }} />
           </marker>
         </defs>
-        {( powerplant.state.command && (powerplant.state.command > 0) )
-          ? <line x1="5" y1="90" x2="5" y2="40" markerEnd="url(#redispatch-arrow)" strokeWidth="10px" stroke="green"/>
-          : <line x1="5" y1="10" x2="5" y2="60" markerEnd="url(#redispatch-arrow)" strokeWidth="10px" stroke="green"/>
-        }
-        
+        {powerplant.state.command && powerplant.state.command > 0 ? (
+          <line x1="5" y1="90" x2="5" y2="40" markerEnd="url(#redispatch-arrow)" strokeWidth="10px" stroke="green" />
+        ) : (
+          <line x1="5" y1="10" x2="5" y2="60" markerEnd="url(#redispatch-arrow)" strokeWidth="10px" stroke="green" />
+        )}
       </svg>
-      <div>{powerplant.state.command} MW</div>
+      <div>{powerplant.state.command?.toFixed(2)} MW</div>
     </div>
-  )
-}
+  );
+};
 
 export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
   const context = React.useContext(MapContext);
-  const prev_powerplant = usePrevious(powerplant)
+  const prev_powerplant = usePrevious(powerplant);
 
   const [x, y] = context.viewport
     ? context.viewport.project([powerplant.location.longitude, powerplant.location.latitude])
@@ -100,45 +105,42 @@ export const Marker: React.FC<MarkerProps> = ({ powerplant, onClick }) => {
     top: y,
   };
 
-  const icon = getIcon(powerplant.type)
-  const imageStyle = getImageStyle(context.viewport)
-  const detailStyle = getDetailStyle(context.viewport)
-  const spinnerStyle = getSpinnerStyle(imageStyle)
+  const icon = getIcon(powerplant.type);
+  const imageStyle = getImageStyle(context.viewport);
+  const detailStyle = getDetailStyle(context.viewport);
+  const spinnerStyle = getSpinnerStyle(imageStyle);
 
-  const dispatchRequestPending = powerplant.state.command !== 0
-  const dispatchRunning = (powerplant.state.command !== prev_powerplant?.state.command) && prev_powerplant?.state.command !== 0
-  const dispatchRunningDelay = useDelayUnmount(dispatchRunning, 3000)
+  const dispatchRequestPending = powerplant.state.command !== 0;
+  const dispatchRunning =
+    powerplant.state.command !== prev_powerplant?.state.command && prev_powerplant?.state.command !== 0;
+  const dispatchRunningDelay = useDelayUnmount(dispatchRunning, 3000);
 
   return (
-    <div onClick={() => onClick(powerplant)} className="position-absolute d-flex flex-row" style={markerStyle}>
+    <div onClick={() => onClick(powerplant)} className="position-absolute d-flex flex-row align-items-center" style={markerStyle}>
       <div className="position-relative align-center" style={imageStyle}>
         <motion.div className="p-2 position-absolute" animate={imageStyle}>
-          <img
-            src={icon} 
-            alt={powerplant.type} 
-            style={{width: '100%', height: '100%'}}
-          />
+          <img src={icon} alt={powerplant.type} style={{ width: '100%', height: '100%' }} />
         </motion.div>
         {dispatchRequestPending && (
           <div className="position-absolute top-50 start-50 translate-middle">
-            <LoadingCircle radius={spinnerStyle.radius} color={"green"} strokeWidth={spinnerStyle.strokeWidth} />
+            <LoadingCircle radius={spinnerStyle.radius} color={'green'} strokeWidth={spinnerStyle.strokeWidth} />
           </div>
         )}
         {dispatchRequestPending && getRedispatchAmountLable(powerplant)}
         {dispatchRunningDelay && (
           <div className="position-absolute top-50 start-50 translate-middle">
-            <FillCircle radius={spinnerStyle.radius} color={"green"} strokeWidth={spinnerStyle.strokeWidth} />
+            <FillCircle radius={spinnerStyle.radius} color={'green'} strokeWidth={spinnerStyle.strokeWidth} />
           </div>
         )}
       </div>
 
       <AnimatePresence>
-        {(context.viewport && context.viewport.zoom > ZOOM_BORDER) && (
-          <motion.div style={{marginLeft: "25px"}} animate={detailStyle}>
+        {context.viewport && context.viewport.zoom > ZOOM_BORDER && (
+          <motion.div style={{ marginLeft: '25px' }} animate={detailStyle}>
             <PowerState max_power={powerplant.max_power} min_power={powerplant.min_power} state={powerplant.state} />
           </motion.div>
         )}
-      </AnimatePresence>      
+      </AnimatePresence>
     </div>
   );
 };

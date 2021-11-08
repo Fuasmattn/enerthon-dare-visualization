@@ -15,10 +15,8 @@ export const PowerState: React.FC<PowerStateProps> = ({ max_power, min_power, st
   const plusPercents = 100 + LINE_HIGHT - (100 * (state.ist + state.potential_plus)) / max_power;
   const minusPercents = 100 - LINE_HIGHT - (100 * (state.ist - state.potential_minus)) / max_power;
 
-  const displayPlusText = (LINE_HIGHT  < istPercents) && (state.potential_plus >= 0.05);
-  const displayMinusText = (istPercents < 100 - LINE_HIGHT * 1.5) && (state.potential_minus >= 0.1);
-
-  console.log({...state, max: max_power, min: min_power, displayMinusText: displayMinusText, displayPlusText: displayPlusText, plusPercents: plusPercents, minusPercents: minusPercents, istPercents: istPercents})
+  const displayPlusText = LINE_HIGHT < istPercents && state.potential_plus >= 0.05;
+  const displayMinusText = istPercents < 100 - LINE_HIGHT * 1.5 && state.potential_minus >= 0.1;
 
   return (
     <div className="d-flex flex-row" style={{ width: '150px', height: '100px' }}>
@@ -37,34 +35,30 @@ export const PowerState: React.FC<PowerStateProps> = ({ max_power, min_power, st
           </text>
         </svg>
 
-        <motion.svg
-          width="100%"
-          height={LINE_HIGHT + 'px'}
-          viewBox="0 0 150 10"
-          animate={{ y: istPercents - LINE_HIGHT / 2 }}
-          initial={{ y: 0 }}
+        <motion.line
+          animate={{ y: Math.max(Math.min(istPercents, 98.5), 2) }}
+          initial={{ y: 100 }}
           transition={{ duration: DURATION }}
-        >
-          <line x1="0" y1="5" x2="70" y2="5" stroke="black" strokeWidth="1.5px" strokeOpacity="0.8" />
-          {displayIst && (
-            <text x="75" y="10" fontSize={FONT_SIZE + 'px'}>
-              {state.ist.toFixed(1)} MW
-            </text>
-          )}
-        </motion.svg>
+          x1="0"
+          y1="0"
+          x2="70"
+          y2="0"
+          stroke="black"
+          strokeWidth="1.5px"
+        />
 
         <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
-          <motion.stop offset="20%" stopColor="green" animate={{ stopOpacity: (100 - istPercents) / 100 }}/>
-          <stop offset="100%" stopColor="green" stopOpacity="0.2"/>
+          <motion.stop offset="20%" stopColor="green" animate={{ stopOpacity: (100 - istPercents) / 100 }} />
+          <stop offset="100%" stopColor="green" stopOpacity="0.2" />
         </linearGradient>
 
-        <motion.rect 
+        <motion.rect
           width="50"
           animate={{ height: 100 - istPercents, y: istPercents }}
-          initial={{ height: 0 }}
+          initial={{ height: 0, y: 100 }}
           transition={{ duration: DURATION }}
           x="0"
-          style={{fill: "url(#gradient)", opacity: 0.5}}
+          style={{ fill: 'url(#gradient)', opacity: 0.5 }}
         />
 
         <defs>

@@ -12,7 +12,6 @@ export const Toolbar = () => {
       <button
         className="btn btn-small bg-white"
         onClick={() => {
-          console.log(privacyMode, showTimeline);
           if (!privacyMode && showTimeline) {
             dispatch({ type: ActionType.DESELECT_RESOURCE });
           }
