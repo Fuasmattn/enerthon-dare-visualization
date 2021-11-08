@@ -104,7 +104,7 @@ export const Timeline: React.FC = () => {
       .enter()
       .append('text')
       .attr('transform', `translate(${padding.left - 15}, ${paddingTop})`)
-      .text((d) => `${Math.abs(d.value)} MW`)
+      .text((d) => `${Math.abs(d.value).toFixed(2)} MW`)
       .style('font-size', 13)
       .attr('x', (d) => xScale(d.start) + 25)
       .attr('text-anchor', 'start')
